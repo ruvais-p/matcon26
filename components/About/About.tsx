@@ -1,5 +1,24 @@
 import styles from "./About.module.css";
 
+const THEMES = [
+  "Green and Sustainable Chemistry",
+  "Smart framework materials",
+  "Energy and Photovoltaics",
+  "Frontiers in Computational Modelling and AI",
+  "Polymer Science and Engineering",
+  "Materials for Space Technology",
+  "Supramolecular Materials and Assemblies",
+  "Sensors and Biosensors",
+  "Next generation Nanomaterials",
+  "Nanomaterials for Biomedical Applications",
+  "Drug Discovery and Drug Delivery",
+  "Emerging Techniques in Spectroscopy",
+  "Catalysis and Synthetic Organic Chemistry",
+  "Advanced Functional Materials",
+  "Nuclear Materials",
+  "Separation Science and Technology"
+];
+
 export default function About() {
   return (
     <section className={styles.about} aria-label="About MATCON 2026">
@@ -97,6 +116,28 @@ export default function About() {
                 <div className={styles.readout_val}>KOCHI.IN</div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* SECTION 3: THEMES */}
+        <div className={styles.themes_section}>
+          <div className={styles.themes_header}>
+            <div className={styles.ghost_title}>THEMES</div>
+            <div className={styles.meta_header}>
+              <span className={styles.meta_id}>03/08</span>
+              <span className={styles.meta_status}>// FOCUS_MATRIX</span>
+            </div>
+            <h2 className={styles.title}>CONFERENCE <span className={styles.title_hi}>THEMES</span></h2>
+          </div>
+
+          <div className={styles.themes_grid}>
+            {THEMES.map((theme, idx) => (
+              <div key={idx} className={styles.theme_card}>
+                <span className={styles.theme_index}>T_{String(idx + 1).padStart(2, '0')}</span>
+                <h3 className={styles.theme_name}>{theme}</h3>
+                <div className={styles.theme_accent}></div>
+              </div>
+            ))}
           </div>
         </div>
 
