@@ -36,6 +36,11 @@ export default function Hero() {
           Download Brochure
         </a>
       </div>
+
+      {/* Decorative Bottom Transition */}
+      <div className={styles.bottomTransition}>
+        <div className={styles.divider}></div>
+      </div>
     </section>
   );
 }

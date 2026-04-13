@@ -1,6 +1,6 @@
 .about {
   background: var(--bg);
-  padding: 120px 0;
+  padding: 180px 0 120px; /* Increased top padding */
   position: relative;
   overflow: hidden;
   z-index: 1; /* Ensure it stays above global background */
@@ -15,6 +15,20 @@
     linear-gradient(rgba(200, 240, 74, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(200, 240, 74, 0.03) 1px, transparent 1px);
   background-size: 60px 60px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Top Flare to transition from Hero */
+.about::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 400px;
+  background: radial-gradient(circle at top center, rgba(200, 240, 74, 0.04), transparent 70%);
   z-index: 0;
   pointer-events: none;
 }
