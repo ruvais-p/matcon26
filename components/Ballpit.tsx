@@ -107,18 +107,35 @@ class X {
         this.canvas = elem;
       } else {
         console.error('Three: Missing canvas or id parameter');
+        return;
       }
     } else {
       console.error('Three: Missing canvas or id parameter');
+      return;
     }
-    this.canvas!.style.display = 'block';
+
+    if (!this.canvas) return;
+    this.canvas.style.display = 'block';
+
     const rendererOptions: WebGLRendererParameters = {
       canvas: this.canvas,
       powerPreference: 'high-performance',
       ...(this.#config.rendererOptions ?? {})
     };
-    this.renderer = new WebGLRenderer(rendererOptions);
-    this.renderer.outputColorSpace = SRGBColorSpace;
+
+    try {
+      // Check if WebGL is available before trying to create it
+      const gl = this.canvas.getContext('webgl2') || this.canvas.getContext('webgl');
+      if (!gl) {
+        throw new Error('WebGL not supported');
+      }
+
+      this.renderer = new WebGLRenderer(rendererOptions);
+      this.renderer.outputColorSpace = SRGBColorSpace;
+    } catch (e) {
+      console.warn('Ballpit: WebGL initialization failed. Falling back to empty state.', e);
+      // We don't initialize this.renderer, but we mark the instance as potentially broken
+    }
   }
 
   #initObservers() {
@@ -197,6 +214,8 @@ class X {
   }
 
   #updateRenderer() {
+    if (!this.renderer) return;
+
     this.renderer.setSize(this.size.width, this.size.height);
     this.#postprocessing?.setSize(this.size.width, this.size.height);
     let pr = window.devicePixelRatio;
@@ -252,6 +271,7 @@ class X {
   }
 
   #render() {
+    if (!this.renderer) return;
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -276,8 +296,8 @@ class X {
     this.#stopAnimation();
     this.clear();
     this.#postprocessing?.dispose();
-    this.renderer.dispose();
-    this.renderer.forceContextLoss();
+    this.renderer?.dispose();
+    this.renderer?.forceContextLoss();
     this.isDisposed = true;
   }
 
@@ -778,6 +798,17 @@ function createBallpit(canvas: HTMLCanvasElement, config: any = {}): CreateBallp
     size: 'parent',
     rendererOptions: { antialias: true, alpha: true }
   });
+
+  if (!threeInstance.renderer) {
+    return {
+      three: threeInstance,
+      spheres: null as any,
+      setCount: () => {},
+      togglePause: () => {},
+      dispose: () => threeInstance.dispose()
+    };
+  }
+
   let spheres: Z;
   threeInstance.renderer.toneMapping = ACESFilmicToneMapping;
   threeInstance.camera.position.set(0, 0, 20);

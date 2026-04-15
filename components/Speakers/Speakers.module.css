@@ -126,18 +126,28 @@
   margin-bottom: 6px;
 }
 
-.institution {
+.department {
   font-size: 13px;
+  color: #fff;
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+
+.institution {
+  font-size: 12px;
   line-height: 1.4;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.7); /* Increased visibility */
   font-weight: 400;
   max-width: 240px;
   margin: 0 auto;
 }
 
 .country {
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 600;
+  color: var(--accent); /* Use accent color for country to make it pop */
+  font-weight: 700;
+  text-transform: uppercase; /* Capitalize as requested */
+  font-size: 11px;
+  letter-spacing: 1px;
 }
 
 

@@ -5,12 +5,21 @@ import styles from "./Hero.module.css";
 import Ballpit from "../Ballpit";
 
 export default function Hero() {
+  const [showBallpit, setShowBallpit] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
 
   React.useEffect(() => {
     const mql = window.matchMedia("(max-width: 425px)");
-    setIsMobile(mql.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    
+    // Initial check
+    const mobile = mql.matches;
+    setIsMobile(mobile);
+    setShowBallpit(!mobile);
+
+    const handler = (e: MediaQueryListEvent) => {
+      setIsMobile(e.matches);
+      setShowBallpit(!e.matches);
+    };
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
   }, []);
