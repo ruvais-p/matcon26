@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import styles from "./Countdown.module.css";
 
-const TARGET = new Date("2026-12-15T00:00:00");
+// Set date parts individually for maximum cross-browser compatibility
+const TARGET = new Date(2026, 11, 15, 0, 0, 0); // Dec 15, 2026 (Month is 0-indexed)
 
 function getTimeLeft() {
   const now = new Date();
@@ -36,8 +37,7 @@ export default function Countdown() {
 
   useEffect(() => {
     setMounted(true);
-
-    // Set initial correct time AFTER mount
+    // Initial calculation
     setTime(getTimeLeft());
 
     const id = setInterval(() => {
@@ -47,20 +47,12 @@ export default function Countdown() {
     return () => clearInterval(id);
   }, []);
 
-  // 🚨 Prevent hydration mismatch
-  if (!mounted) {
-    return (
-      <section className={styles.countdown}>
-        <div className={styles.inner}>
-          <div className={styles.timer}>Loading...</div>
-        </div>
-      </section>
-    );
-  }
+  // Use all zeros for the server-side and initial client-side render
+  const displayTime = mounted ? time : { days: 0, hours: 0, minutes: 0, seconds: 0 };
 
   return (
     <section className={styles.countdown} aria-label="Conference Countdown">
-      <div className={styles.inner}>
+      <div className={styles.inner} style={{ opacity: mounted ? 1 : 0.7, transition: 'opacity 0.6s ease' }}>
         
         <span className={styles.label}>
           // T_MINUS &mdash; CONFERENCE OPENS
@@ -83,28 +75,28 @@ export default function Countdown() {
           aria-label="Countdown timer"
         >
           <div className={styles.unit}>
-            <span className={styles.value}>{pad(time.days)}</span>
+            <span className={styles.value} suppressHydrationWarning>{pad(displayTime.days)}</span>
             <span className={styles.unitLabel}>Days</span>
           </div>
 
           <span className={styles.sep}>:</span>
 
           <div className={styles.unit}>
-            <span className={styles.value}>{pad(time.hours)}</span>
+            <span className={styles.value} suppressHydrationWarning>{pad(displayTime.hours)}</span>
             <span className={styles.unitLabel}>Hours</span>
           </div>
 
           <span className={styles.sep}>:</span>
 
           <div className={styles.unit}>
-            <span className={styles.value}>{pad(time.minutes)}</span>
+            <span className={styles.value} suppressHydrationWarning>{pad(displayTime.minutes)}</span>
             <span className={styles.unitLabel}>Minutes</span>
           </div>
 
           <span className={styles.sep}>:</span>
 
           <div className={styles.unit}>
-            <span className={styles.value}>{pad(time.seconds)}</span>
+            <span className={styles.value} suppressHydrationWarning>{pad(displayTime.seconds)}</span>
             <span className={styles.unitLabel}>Seconds</span>
           </div>
         </div>

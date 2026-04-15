@@ -5,18 +5,30 @@ import styles from "./Hero.module.css";
 import Ballpit from "../Ballpit";
 
 export default function Hero() {
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const mql = window.matchMedia("(max-width: 425px)");
+    setIsMobile(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+
   return (
     <section className={styles.hero} aria-label="MATCON 2026 Hero Section">
-      {/* Ballpit Background — hidden on mobile via CSS */}
-      <div className={styles.backgroundContainer}>
-        <Ballpit
-          count={125}
-          gravity={0.1}
-          friction={0.9975}
-          wallBounce={0.95}
-          followCursor={false}
-        />
-      </div>
+      {/* Ballpit Background — hidden on mobile */}
+      {!isMobile && (
+        <div className={styles.backgroundContainer}>
+          <Ballpit
+            count={125}
+            gravity={0.1}
+            friction={0.9975}
+            wallBounce={0.95}
+            followCursor={false}
+          />
+        </div>
+      )}
 
       {/* Video Background — shown only on mobile (≤425px) via CSS */}
       <div className={styles.videoContainer}>
