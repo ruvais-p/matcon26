@@ -150,8 +150,8 @@ class X {
     const _origAttribs = gl.getContextAttributes.bind(gl);
     (gl as any).getContextAttributes = () => {
       const res = _origAttribs();
-      return res ?? { 
-        alpha: contextAttribs.alpha, 
+      return res ?? {
+        alpha: contextAttribs.alpha,
         antialias: contextAttribs.antialias,
         premultipliedAlpha: true,
         stencil: true,
@@ -402,7 +402,7 @@ class X {
     this.clear();
     this.#postprocessing?.dispose();
     this.renderer?.dispose();
-    // forceContextLoss requires the WEBGL_lose_context extension.
+    // forceContextLoss requires the WEBGL_lose_context extension. jfjwefh0wgfowr[gwr[g]]
     // We suppress that extension for low-end compatibility, so guard the call.
     try { this.renderer?.forceContextLoss(); } catch { /* extension unavailable — skip */ }
     this.isDisposed = true;
