@@ -46,6 +46,7 @@ export default function RegisterPage() {
   const [isTableScrollable, setIsTableScrollable] = useState(false);
   const [tableScrolled, setTableScrolled] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [qrCodeLink, setQrCodeLink] = useState<string | null>(null);
   const feeTableRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -123,9 +124,29 @@ export default function RegisterPage() {
         name: "MATCON 2026",
         description: "Event Registration Fee",
         order_id: orderData.id,
-        handler: function (response: any) {
+        handler: async function (response: any) {
           console.log("Payment Successful:", response);
-          setSubmitted(true);
+          try {
+            const regRes = await fetch("/api/register", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                formData: form,
+                paymentData: response,
+              }),
+            });
+
+            const regData = await regRes.json();
+            if (regData.success) {
+              setQrCodeLink(regData.qrLink);
+              setSubmitted(true);
+            } else {
+              throw new Error(regData.error || "Registration failed");
+            }
+          } catch (err: any) {
+            console.error("Post-payment Registration Error:", err);
+            alert("Payment was successful, but registration failed: " + err.message + ". Please contact support.");
+          }
         },
         prefill: {
           name: form.name,
@@ -178,6 +199,20 @@ export default function RegisterPage() {
             <strong>MATCON 2026</strong> has been received. A confirmation will
             be sent to <strong>{form.email}</strong>.
           </p>
+
+          {qrCodeLink && (
+            <div className={styles.ticketSection}>
+              <h3 className={styles.ticketTitle}>Your Digital Ticket</h3>
+              <div className={styles.qrContainer}>
+                <img src={qrCodeLink} alt="Registration QR Code" className={styles.qrImage} />
+              </div>
+              <p className={styles.ticketNote}>Please save this QR code for event entry.</p>
+              <a href={qrCodeLink} download={`MATCON2026_Ticket_${form.name}.png`} className={styles.downloadBtn}>
+                Download Ticket
+              </a>
+            </div>
+          )}
+
           <div className={styles.successDivider} />
           <Link href="/" className={styles.backBtn}>
             ← Return to Homepage
