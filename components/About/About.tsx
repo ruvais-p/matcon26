@@ -37,7 +37,7 @@ export default function About() {
   return (
     <section className={styles.about} aria-label="About MATCON 2026">
       <div className={styles.container}>
-        
+
         {/* SECTION 1: THE CONFERENCE */}
         <div className={styles.segment}>
           <div className={styles.segment_meta}>
@@ -51,7 +51,7 @@ export default function About() {
             <h2 className={styles.title}>
               MAT<span className={styles.title_hi}>CON</span> 2026
             </h2>
-            
+
             <div className={styles.body}>
               <p>
                 MATCON 2026 is the <span className={styles.highlight}>8th international conference</span> of the prestigious MATCON series organized by the Department of Applied Chemistry, CUSAT.
@@ -61,7 +61,7 @@ export default function About() {
                 The 3-day international conference will be devoted to invited lectures by eminent academicians and scientists, oral presentations and poster presentations by researchers and budding scientists from various parts of the globe.
               </p>
             </div>
-            
+
             <div className={styles.decorative_marker}>
               <span>SERIES_INDEX: VIII.26</span>
               <span>ARCHIVE: MATCON_INTL</span>
@@ -99,10 +99,10 @@ export default function About() {
             <h2 className={styles.title}>
               APPLIED CHEMISTRY
             </h2>
-            
+
             <div className={styles.body}>
               <p>
-                Established in <span className={styles.highlight}>1976</span> to play an important role in the further development of the industrial belt in the greater Cochin area by providing scientific support and trained personnel to the industries. 
+                Established in <span className={styles.highlight}>1976</span> to play an important role in the further development of the industrial belt in the greater Cochin area by providing scientific support and trained personnel to the industries.
               </p>
               <p>
                 The Department has now grown and emerged as one of the pioneering centers in Chemistry in the State of Kerala. The Department currently offers a five year Integrated M.Sc, two year M.Sc. and Ph.D. Programmes.
@@ -146,14 +146,14 @@ export default function About() {
 
           <div className={styles.themes_grid}>
             {THEMES.map((theme, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className={`${styles.theme_card} ${activeIdx === idx ? styles.active : ""}`}
               >
                 <div className={styles.cell_decoration}></div>
                 <div className={styles.cell_top}>
                   <span className={styles.atomic_number}>{idx + 1}</span>
-                  <span className={styles.atomic_weight}>20.26</span>
+                  <span className={styles.atomic_weight}>2026</span>
                 </div>
                 <div className={styles.cell_main}>
                   <div className={styles.symbol}>{theme.symbol}</div>
