@@ -1037,3 +1037,23 @@
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Dynamic Fee Styles ── */
+.submitInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feeHighlight {
+  font-family: var(--font-outfit, 'Outfit', sans-serif);
+  font-size: 1.1rem;
+  color: var(--text, #f2f2f2);
+  letter-spacing: 0.02em;
+}
+
+.feeHighlight strong {
+  color: var(--accent, #c8f04a);
+  font-weight: 700;
+  margin-left: 4px;
+}

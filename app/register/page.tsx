@@ -6,6 +6,7 @@ import Link from "next/link";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import Script from "next/script";
+import { getRegistrationFee } from "@/lib/fees";
 
 type FormData = {
   title: string;
@@ -47,7 +48,21 @@ export default function RegisterPage() {
   const [tableScrolled, setTableScrolled] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [qrCodeLink, setQrCodeLink] = useState<string | null>(null);
+  const [currentFee, setCurrentFee] = useState<{ amount: number; currency: string } | null>(null);
   const feeTableRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (form.designation && form.nationality && form.participationType) {
+      const fee = getRegistrationFee({
+        category: form.designation,
+        nationality: form.nationality,
+        participationType: form.participationType,
+      });
+      setCurrentFee(fee);
+    } else {
+      setCurrentFee(null);
+    }
+  }, [form.designation, form.nationality, form.participationType]);
 
   useEffect(() => {
     const el = feeTableRef.current;
@@ -101,14 +116,10 @@ export default function RegisterPage() {
   const makePayment = async () => {
     setIsProcessing(true);
     try {
-      // Create Razorpay Order
       const res = await fetch("/api/razorpay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: 1000 * 100, // INR 1000 in paise
-          currency: "INR",
-        }),
+        body: JSON.stringify({ formData: form }),
       });
 
       const orderData = await res.json();
@@ -742,9 +753,16 @@ export default function RegisterPage() {
 
           {/* ── Submit ── */}
           <div className={styles.submitRow}>
-            <p className={styles.submitNote}>
-              Fields marked with <span className={styles.required}>*</span> are required.
-            </p>
+            <div className={styles.submitInfo}>
+              <p className={styles.submitNote}>
+                Fields marked with <span className={styles.required}>*</span> are required.
+              </p>
+              {currentFee && (
+                <div className={styles.feeHighlight}>
+                  Total Fee: <strong>{currentFee.currency === "INR" ? `₹${currentFee.amount.toLocaleString("en-IN")}` : `$${currentFee.amount}`}</strong>
+                </div>
+              )}
+            </div>
             <button 
               type="submit" 
               className={styles.submitBtn} 
