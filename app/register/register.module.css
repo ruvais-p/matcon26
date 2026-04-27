@@ -475,7 +475,116 @@
   font-style: italic;
 }
 
+
+/* ── Phone Input Overrides ── */
+.phoneInputContainer {
+  width: 100%;
+}
+
+.phoneInput :global(.react-tel-input) {
+  font-family: inherit;
+}
+
+.phoneInputInner {
+  width: 100% !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 2px !important;
+  padding: 13px 16px 13px 52px !important;
+  color: var(--text, #f2f2f2) !important;
+  font-family: var(--font-dm-sans, 'DM Sans', sans-serif) !important;
+  font-size: 1rem !important;
+  outline: none !important;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s !important;
+  height: auto !important;
+}
+
+.phoneInputInner:focus {
+  border-color: rgba(200, 240, 74, 0.5) !important;
+  background: rgba(200, 240, 74, 0.04) !important;
+  box-shadow: 0 0 0 3px rgba(200, 240, 74, 0.06) !important;
+}
+
+.phoneInputError .phoneInputInner {
+  border-color: rgba(239, 68, 68, 0.6) !important;
+  background: rgba(239, 68, 68, 0.04) !important;
+}
+
+.phoneButton {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 2px 0 0 2px !important;
+  transition: background 0.2s, border-color 0.2s !important;
+  width: 44px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.phoneButton:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.phoneButton :global(.selected-flag) {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+}
+
+.phoneDropdown {
+  background: #0e1f10 !important;
+  border: 1px solid rgba(200, 240, 74, 0.2) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+  color: #f2f2f2 !important;
+  margin-top: 4px !important;
+  width: 300px !important;
+}
+
+.phoneDropdown :global(.country) {
+  padding: 10px 14px !important;
+  transition: background 0.2s !important;
+}
+
+.phoneDropdown :global(.country:hover) {
+  background: rgba(200, 240, 74, 0.1) !important;
+}
+
+.phoneDropdown :global(.country.highlight) {
+  background: rgba(200, 240, 74, 0.15) !important;
+}
+
+.phoneDropdown :global(.country-name) {
+  color: #f2f2f2 !important;
+  font-size: 0.9rem !important;
+}
+
+.phoneDropdown :global(.dial-code) {
+  color: var(--accent, #c8f04a) !important;
+  font-size: 0.85rem !important;
+  opacity: 0.8;
+}
+
+.phoneDropdown :global(.search) {
+  background: #071308 !important;
+  padding: 10px !important;
+}
+
+.phoneDropdown :global(.search-box) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f2f2f2 !important;
+  border-radius: 2px !important;
+}
+
 /* ── Error Messages ── */
+
 .errorMsg {
   font-size: 0.82rem;
   color: #f87171;

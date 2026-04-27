@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./register.module.css";
 import Link from "next/link";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import Script from "next/script";
 
 type FormData = {
   title: string;
@@ -42,6 +45,7 @@ export default function RegisterPage() {
   const [submitted, setSubmitted] = useState(false);
   const [isTableScrollable, setIsTableScrollable] = useState(false);
   const [tableScrolled, setTableScrolled] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const feeTableRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,6 +70,13 @@ export default function RegisterPage() {
     }
   };
 
+  const handlePhoneChange = (value: string) => {
+    setForm((prev) => ({ ...prev, contact: value }));
+    if (errors.contact) {
+      setErrors((prev) => ({ ...prev, contact: undefined }));
+    }
+  };
+
   const validate = (): FormErrors => {
     const errs: FormErrors = {};
     if (!form.title) errs.title = "Please select a title.";
@@ -86,7 +97,57 @@ export default function RegisterPage() {
     return errs;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const makePayment = async () => {
+    setIsProcessing(true);
+    try {
+      // Create Razorpay Order
+      const res = await fetch("/api/razorpay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: 1000 * 100, // INR 1000 in paise
+          currency: "INR",
+        }),
+      });
+
+      const orderData = await res.json();
+
+      if (!orderData || orderData.error) {
+        throw new Error(orderData.error || "Failed to create order");
+      }
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "MATCON 2026",
+        description: "Event Registration Fee",
+        order_id: orderData.id,
+        handler: function (response: any) {
+          console.log("Payment Successful:", response);
+          setSubmitted(true);
+        },
+        prefill: {
+          name: form.name,
+          email: form.email,
+          contact: form.contact,
+        },
+        theme: {
+          color: "#c8f04a",
+        },
+      };
+
+      const rzp = (window as any).Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Payment Error:", error);
+      alert("There was an issue initiating the payment. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
@@ -96,7 +157,9 @@ export default function RegisterPage() {
       el?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    setSubmitted(true);
+    
+    // Initiate Razorpay Payment
+    await makePayment();
   };
 
   if (submitted) {
@@ -135,6 +198,11 @@ export default function RegisterPage() {
           <span className={styles.metaTag}>// EVENT_REG</span>
         </div>
       </header>
+
+      <Script
+        id="razorpay-checkout-js"
+        src="https://checkout.razorpay.com/v1/checkout.js"
+      />
 
       <main className={styles.main}>
         {/* Page Title Block */}
@@ -340,17 +408,23 @@ export default function RegisterPage() {
                 <label className={styles.label} htmlFor="contact">
                   Contact Number <span className={styles.required}>*</span>
                 </label>
-                <input
-                  id="contact"
-                  name="contact"
-                  type="tel"
-                  value={form.contact}
-                  onChange={handleChange}
-                  placeholder="+91 XXXXX XXXXX"
-                  className={`${styles.input} ${errors.contact ? styles.inputError : ""}`}
-                  aria-describedby={errors.contact ? "contact-error" : undefined}
-                  autoComplete="tel"
-                />
+                <div className={`${styles.phoneInputContainer} ${errors.contact ? styles.phoneInputError : ""}`}>
+                  <PhoneInput
+                    country={"in"}
+                    value={form.contact}
+                    onChange={handlePhoneChange}
+                    inputProps={{
+                      name: "contact",
+                      id: "contact",
+                      required: true,
+                      autoComplete: "tel",
+                    }}
+                    containerClass={styles.phoneInput}
+                    inputClass={styles.phoneInputInner}
+                    buttonClass={styles.phoneButton}
+                    dropdownClass={styles.phoneDropdown}
+                  />
+                </div>
                 <p className={styles.fieldNote}>Preferably WhatsApp number</p>
                 {errors.contact && (
                   <p className={styles.errorMsg} id="contact-error" role="alert">
@@ -636,8 +710,13 @@ export default function RegisterPage() {
             <p className={styles.submitNote}>
               Fields marked with <span className={styles.required}>*</span> are required.
             </p>
-            <button type="submit" className={styles.submitBtn} id="submit-btn">
-              <span>Submit Registration</span>
+            <button 
+              type="submit" 
+              className={styles.submitBtn} 
+              id="submit-btn"
+              disabled={isProcessing}
+            >
+              <span>{isProcessing ? "Processing..." : "Submit Registration"}</span>
               <ArrowRightIcon />
             </button>
           </div>
