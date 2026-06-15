@@ -2,7 +2,6 @@
 
 import React from "react";
 import styles from "./Hero.module.css";
-import Link from "next/link";
 import Ballpit from "../Ballpit";
 
 export default function Hero() {
@@ -64,12 +63,17 @@ export default function Hero() {
           2026
         </h1>
 
-        <p className={styles.dates}>15, 16, 17 December 2026</p>
+        <p className={styles.dates}>15 to 17 December 2026</p>
         
         <div className={styles.actions}>
-          <Link href="/register" className={styles.btn}>
+          <a
+            href="https://onlinesbi.sbi.bank.in/sbicollect/icollecthome.htm?corpID=7053967"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.btn}
+          >
             Register
-          </Link>
+          </a>
           <a href="#" className={styles.btnSecondary}>
             Download Brochure
           </a>

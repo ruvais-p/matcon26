@@ -156,7 +156,6 @@ export default function About() {
                   <span className={styles.atomic_weight}>2026</span>
                 </div>
                 <div className={styles.cell_main}>
-                  <div className={styles.symbol}>{theme.symbol}</div>
                   <h3 className={styles.theme_name}>{theme.name}</h3>
                 </div>
                 <div className={styles.theme_accent}></div>

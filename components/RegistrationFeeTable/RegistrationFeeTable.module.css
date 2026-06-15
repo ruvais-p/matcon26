@@ -1,0 +1,239 @@
+/* ═══════════════════════════════════════════════════════
+   RegistrationFeeTable — standalone component styles
+   Accent: #c8f04a (lime-green), BG: #020e04
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Section Wrapper ── */
+.section {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  padding: 36px;
+  position: relative;
+  overflow: hidden;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent, #c8f04a) 0%, transparent 60%);
+  opacity: 0.25;
+}
+
+.section:hover {
+  border-color: rgba(200, 240, 74, 0.15);
+}
+
+/* ── Section Header ── */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.sectionIndex {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 0.7rem;
+  color: var(--accent, #c8f04a);
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.sectionTitle {
+  font-family: var(--font-outfit, 'Outfit', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text, #f2f2f2);
+  margin: 0;
+}
+
+.sectionLine {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  min-width: 20px;
+}
+
+/* ── Swipe Hint ── */
+.swipeHint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 6px 14px;
+  background: rgba(200, 240, 74, 0.06);
+  border: 1px solid rgba(200, 240, 74, 0.15);
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent, #c8f04a);
+  animation: swipeFadeIn 0.4s ease both;
+  pointer-events: none;
+  user-select: none;
+}
+
+.swipeHintArrow {
+  display: inline-block;
+  animation: swipePulse 1.4s ease-in-out infinite;
+  font-size: 0.9rem;
+  letter-spacing: 4px;
+}
+
+@keyframes swipeFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes swipePulse {
+  0%, 100% { opacity: 0.4; transform: scaleX(0.9); }
+  50%       { opacity: 1;   transform: scaleX(1.1); }
+}
+
+/* ── Fee Table ── */
+.feeTableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.feeTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
+  font-size: 0.875rem;
+  min-width: 680px;
+}
+
+.feeTable thead tr:first-child {
+  background: rgba(200, 240, 74, 0.08);
+}
+
+.feeTable thead tr:last-child {
+  background: rgba(200, 240, 74, 0.04);
+}
+
+.feeTh {
+  padding: 12px 10px;
+  text-align: center;
+  font-family: var(--font-outfit, 'Outfit', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent, #c8f04a);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.feeThCategory {
+  padding: 12px 14px;
+  text-align: left;
+  font-family: var(--font-outfit, 'Outfit', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent, #c8f04a);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.feeThSub {
+  padding: 9px 10px;
+  text-align: center;
+  font-family: var(--font-outfit, 'Outfit', sans-serif);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-muted, #a1a1aa);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.feeTr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.15s;
+}
+
+.feeTr:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.feeTr:last-child {
+  border-bottom: none;
+}
+
+.feeTdCat {
+  padding: 12px 14px;
+  font-weight: 600;
+  color: var(--text, #f2f2f2);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+}
+
+.feeTd {
+  padding: 12px 10px;
+  text-align: center;
+  color: rgba(242, 242, 242, 0.8);
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  font-variant-numeric: tabular-nums;
+}
+
+.feeTd:last-child,
+.feeThSub:last-child,
+.feeTh:last-child {
+  border-right: none;
+}
+
+/* ── Deadlines ── */
+.feeDeadlines {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.feeDeadline {
+  font-size: 0.85rem;
+  color: var(--text-muted, #a1a1aa);
+}
+
+.feeDeadline strong {
+  color: var(--accent, #c8f04a);
+  font-weight: 600;
+}
+
+.feeDeadlineSep {
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 0.85rem;
+}
+
+.feeNote {
+  margin: 10px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted, #a1a1aa);
+  font-style: italic;
+  opacity: 0.75;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .section {
+    padding: 24px 16px;
+  }
+}
