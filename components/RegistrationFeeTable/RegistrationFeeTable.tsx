@@ -3,7 +3,13 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./RegistrationFeeTable.module.css";
 
-const FEE_ROWS = [
+type FeeRow = {
+  cat: string;
+  vals: readonly number[];
+  usd?: boolean;
+};
+
+const FEE_ROWS: FeeRow[] = [
   { cat: "Students",          vals: [3000, 3500, 4000, 4500, 5000] },
   { cat: "Research Scholars", vals: [3500, 4000, 4500, 5000, 5500] },
   { cat: "Faculty",           vals: [6000, 7000, 7000, 8000, 8000] },
@@ -11,7 +17,7 @@ const FEE_ROWS = [
   { cat: "Foreign Students",  vals: [250, 300, 350, 400, 450], usd: true },
   { cat: "Foreign Scholars",  vals: [350, 400, 450, 500, 550], usd: true },
   { cat: "Foreign Faculty",   vals: [500, 600, 600, 700, 700], usd: true },
-] as const;
+];
 
 export default function RegistrationFeeTable() {
   const [isScrollable, setIsScrollable] = useState(false);
