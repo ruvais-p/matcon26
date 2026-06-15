@@ -231,6 +231,40 @@
   opacity: 0.75;
 }
 
+/* ── Register CTA ── */
+.registerRow {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.registerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent, #c8f04a);
+  color: #020e04;
+  font-family: var(--font-outfit, 'Outfit', sans-serif);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 14px 40px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.registerBtn:hover {
+  background: #d4f55b;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(200, 240, 74, 0.3);
+}
+
+.registerBtn:active {
+  transform: translateY(0);
+}
+
 /* ── Responsive ── */
 @media (max-width: 600px) {
   .section {
