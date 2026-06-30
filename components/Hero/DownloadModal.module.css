@@ -1,0 +1,230 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(2, 14, 4, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(200, 240, 74, 0.2);
+  width: 90%;
+  max-width: 440px;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(200, 240, 74, 0.05);
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 32px;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+}
+
+.closeBtn:hover {
+  color: var(--accent);
+  background: rgba(200, 240, 74, 0.08);
+  border-color: rgba(200, 240, 74, 0.2);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Spinner and Progress Loader */
+.spinnerWrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 100%;
+  height: 100%;
+  border: 3px solid rgba(255, 255, 255, 0.05);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 15px rgba(200, 240, 74, 0.1);
+}
+
+.glowRing {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 240, 74, 0.1);
+  box-shadow: 0 0 20px rgba(200, 240, 74, 0.05);
+  animation: pulseGlow 2s infinite alternate;
+}
+
+.progressText {
+  position: absolute;
+  font-family: var(--font-mono, monospace);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.title {
+  font-family: var(--font-bebas-neue), var(--font-bebas), sans-serif;
+  font-size: 24px;
+  color: #fff;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+
+.titleSuccess {
+  font-family: var(--font-bebas-neue), var(--font-bebas), sans-serif;
+  font-size: 24px;
+  color: var(--accent);
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  text-shadow: 0 0 10px rgba(200, 240, 74, 0.2);
+}
+
+.description {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* Horizontal Progress Bar */
+.barContainer {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent) 0%, #fff 100%);
+  box-shadow: 0 0 10px var(--accent);
+  border-radius: 3px;
+  transition: width 0.15s ease-out;
+}
+
+/* Success Checkmark State */
+.successIconWrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successCheck {
+  color: var(--accent);
+  z-index: 2;
+  filter: drop-shadow(0 0 8px rgba(200, 240, 74, 0.4));
+  animation: checkDraw 0.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+.successRing {
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(200, 240, 74, 0.3);
+  animation: ringPop 0.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+.actionBtn {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 14px 40px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(200, 240, 74, 0.25);
+  width: 100%;
+}
+
+.actionBtn:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+  0% { opacity: 0.3; transform: scale(0.98); }
+  100% { opacity: 0.8; transform: scale(1.02); }
+}
+
+@keyframes ringPop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes checkDraw {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

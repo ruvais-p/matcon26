@@ -1,13 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import styles from "./Hero.module.css";
 import Ballpit from "../Ballpit";
 import HeroTimer from "./HeroTimer";
+import DownloadModal from "./DownloadModal";
 
 export default function Hero() {
   const [showBallpit, setShowBallpit] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   React.useEffect(() => {
     const mql = window.matchMedia("(max-width: 425px)");
@@ -77,9 +79,13 @@ export default function Hero() {
           >
             Register
           </a>
-          <a href="#" className={styles.btnSecondary}>
+          <button
+            onClick={() => setShowDownloadModal(true)}
+            className={styles.btnSecondary}
+            style={{ cursor: "pointer" }}
+          >
             Download Brochure
-          </a>
+          </button>
         </div>
       </div>
 
@@ -87,6 +93,12 @@ export default function Hero() {
       <div className={styles.bottomTransition}>
         <div className={styles.divider}></div>
       </div>
+
+      {/* Themed Download Progress Modal */}
+      <DownloadModal
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+      />
     </section>
   );
 }

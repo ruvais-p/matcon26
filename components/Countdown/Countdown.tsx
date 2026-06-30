@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./Countdown.module.css";
+import GalleryModal from "../Gallery/GalleryModal";
 
 // Set date parts individually for maximum cross-browser compatibility
 const TARGET = new Date(2026, 11, 15, 0, 0, 0); // Dec 15, 2026 (Month is 0-indexed)
@@ -28,6 +29,7 @@ function pad(n: number) {
 
 export default function Countdown() {
   const [mounted, setMounted] = useState(false);
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [time, setTime] = useState({
     days: 0,
     hours: 0,
@@ -102,15 +104,29 @@ export default function Countdown() {
         </div>
 
         <div className={styles.cta}>
-          <a href="#" className={styles.applyBtn} id="apply-now-btn">
-            Apply Now
-          </a>
+          <div className={styles.buttonGroup}>
+            <a href="#" className={styles.applyBtn} id="apply-now-btn">
+              Apply Now
+            </a>
+            <button
+              onClick={() => setShowGalleryModal(true)}
+              className={styles.galleryBtn}
+              style={{ cursor: "pointer" }}
+            >
+              View Gallery
+            </button>
+          </div>
           <span className={styles.deadline}>
             15 • 16 • 17 December 2026 — CUSAT, Kochi
           </span>
         </div>
 
       </div>
+
+      <GalleryModal
+        isOpen={showGalleryModal}
+        onClose={() => setShowGalleryModal(false)}
+      />
     </section>
   );
 }
