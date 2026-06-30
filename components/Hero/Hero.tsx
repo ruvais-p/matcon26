@@ -3,6 +3,7 @@
 import React from "react";
 import styles from "./Hero.module.css";
 import Ballpit from "../Ballpit";
+import HeroTimer from "./HeroTimer";
 
 export default function Hero() {
   const [showBallpit, setShowBallpit] = React.useState(false);
@@ -64,6 +65,8 @@ export default function Hero() {
         </h1>
 
         <p className={styles.dates}>15 to 17 December 2026</p>
+
+        <HeroTimer />
         
         <div className={styles.actions}>
           <a
