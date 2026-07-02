@@ -120,3 +120,26 @@
     CREATE POLICY "Allow public select" ON storage.objects FOR SELECT USING (bucket_id = 'tickets');
     CREATE POLICY "Allow public update" ON storage.objects FOR UPDATE USING (bucket_id = 'tickets');
     CREATE POLICY "Allow public delete" ON storage.objects FOR DELETE USING (bucket_id = 'tickets');
+
+    -- 9. Create bookings table
+    CREATE TABLE IF NOT EXISTS bookings (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        payment_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        abstract_url TEXT NOT NULL,
+        food_preference TEXT NOT NULL,
+        accommodation_needed TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
+    -- 10. Storage Policies (for 'abstracts' bucket)
+    INSERT INTO storage.buckets (id, name, public)
+    VALUES ('abstracts', 'abstracts', true)
+    ON CONFLICT (id) DO UPDATE SET public = true;
+
+    CREATE POLICY "Allow public insert abstracts" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'abstracts');
+    CREATE POLICY "Allow public select abstracts" ON storage.objects FOR SELECT USING (bucket_id = 'abstracts');
+    CREATE POLICY "Allow public update abstracts" ON storage.objects FOR UPDATE USING (bucket_id = 'abstracts');
+    CREATE POLICY "Allow public delete abstracts" ON storage.objects FOR DELETE USING (bucket_id = 'abstracts');

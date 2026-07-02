@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import styles from "./Hero.module.css";
+import Link from "next/link";
 import Ballpit from "../Ballpit";
 import HeroTimer from "./HeroTimer";
 import DownloadModal from "./DownloadModal";
@@ -71,14 +72,12 @@ export default function Hero() {
         <HeroTimer />
         
         <div className={styles.actions}>
-          <a
-            href="https://onlinesbi.sbi.bank.in/sbicollect/icollecthome.htm?corpID=7053967"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/register"
             className={styles.btn}
           >
             Register
-          </a>
+          </Link>
           <button
             onClick={() => setShowDownloadModal(true)}
             className={styles.btnSecondary}

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import styles from "./RegistrationFeeTable.module.css";
+import Link from "next/link";
 
 type FeeRow = {
   cat: string;
@@ -105,10 +106,8 @@ export default function RegistrationFeeTable() {
 
       {/* ── Register CTA ── */}
       <div className={styles.registerRow}>
-        <a
-          href="https://onlinesbi.sbi.bank.in/sbicollect/icollecthome.htm?corpID=7053967"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href="/register"
           className={styles.registerBtn}
         >
           <span>Register Now</span>
@@ -116,7 +115,7 @@ export default function RegistrationFeeTable() {
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
           </svg>
-        </a>
+        </Link>
       </div>
     </section>
   );
