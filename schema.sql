@@ -131,6 +131,7 @@
         abstract_url TEXT NOT NULL,
         food_preference TEXT NOT NULL,
         accommodation_needed TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
         created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
 
