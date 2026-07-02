@@ -57,6 +57,8 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
         name: selectedTicketBooking.name,
         paymentId: selectedTicketBooking.payment_id,
         email: selectedTicketBooking.email,
+        food: selectedTicketBooking.food_preference,
+        accommodation: selectedTicketBooking.accommodation_needed,
         event: "MATCON 2026"
       });
       QRCode.toDataURL(qrData, { width: 180, margin: 1, color: { dark: "#020e04", light: "#ffffff" } })
