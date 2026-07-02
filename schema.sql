@@ -134,6 +134,8 @@
         created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
 
+    ALTER TABLE bookings DISABLE ROW LEVEL SECURITY;
+
     -- 10. Storage Policies (for 'abstracts' bucket)
     INSERT INTO storage.buckets (id, name, public)
     VALUES ('abstracts', 'abstracts', true)
