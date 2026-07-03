@@ -68,6 +68,7 @@ export default function Hero() {
         </h1>
 
         <p className={styles.dates}>15 to 17 December 2026</p>
+        <p className={styles.venue}>Venue: Seminar Complex, CUSAT</p>
 
         <HeroTimer />
         
@@ -78,6 +79,14 @@ export default function Hero() {
           >
             Register
           </Link>
+          <a
+            href="/template/MATCON Abstract.docx"
+            download="MATCON Abstract.docx"
+            className={styles.btn}
+            style={{ cursor: "pointer" }}
+          >
+            Abstract template
+          </a>
           <button
             onClick={() => setShowDownloadModal(true)}
             className={styles.btnSecondary}
