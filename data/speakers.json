@@ -1,35 +1,11 @@
 [
     {
-        "name": "Dr. Frantisek Hartl",
-        "designation": "Professor",
-        "department": "Department of Chemistry",
-        "institution": "University of Reading",
-        "country": "UK",
-        "image": "Dr. Frantisek Hartl.webp"
-    },
-    {
-        "name": "Dr. Haruo Inoue",
-        "designation": "Professor",
-        "department": "Department of Applied Chemistry",
-        "institution": "Tokyo Metropolitan University",
-        "country": "Japan",
-        "image": "Dr. Haruo Inoue_converted.webp"
-    },
-    {
         "name": "Dr. Ajayan Vinu",
         "designation": "Laureate Professor and Director",
         "department": "GICAN",
         "institution": "University of Newcastle",
         "country": "Australia",
         "image": "Dr. Ajayan vinu.webp"
-    },
-    {
-        "name": "Dr. Sangaraju Shanmugam",
-        "designation": "Professor",
-        "department": "Department of Energy Science & Engineering",
-        "institution": "Daegu",
-        "country": "South Korea",
-        "image": "Dr. Sangaraju Sanmugam.webp"
     },
     {
         "name": "Dr. Gadi Rothenberg",
@@ -40,12 +16,20 @@
         "image": "Dr. Gadi Rothenberg.webp"
     },
     {
-        "name": "Dr. Subrahmanyam Ch.",
+        "name": "Dr. Oliver Reiser",
+        "designation": "Professor & Dean of Research",
+        "department": "Institute of Organic Chemistry",
+        "institution": "University of Regensburg",
+        "country": "Germany",
+        "image": "Dr. Oliver Reiser.webp"
+    },
+    {
+        "name": "Dr. Haruo Inoue",
         "designation": "Professor",
-        "department": "Department of Chemistry",
-        "institution": "IIT Hyderabad",
-        "country": "India",
-        "image": "Dr. Subrahmanyam Ch.webp"
+        "department": "Department of Applied Chemistry",
+        "institution": "Tokyo Metropolitan University",
+        "country": "Japan",
+        "image": "Dr. Haruo Inoue_converted.webp"
     },
     {
         "name": "Dr. Wim Dehaen",
@@ -56,12 +40,20 @@
         "image": "Dr. Wim Dehaen.webp"
     },
     {
-        "name": "Dr. Sebastian Peter",
+        "name": "Dr. Frantisek Hartl",
         "designation": "Professor",
         "department": "Department of Chemistry",
-        "institution": "JNCASR, Bangalore",
+        "institution": "University of Reading",
+        "country": "UK",
+        "image": "Dr. Frantisek Hartl.webp"
+    },
+    {
+        "name": "Dr. Pradeep T",
+        "designation": "Professor",
+        "department": "Department of Chemistry",
+        "institution": "IIT Madras, Chennai",
         "country": "India",
-        "image": "Dr. Sebastian Peter.webp"
+        "image": "Dr. Pradeep T.webp"
     },
     {
         "name": "Dr. K. George Thomas",
@@ -72,12 +64,12 @@
         "image": "Dr. K. George Thomas.webp"
     },
     {
-        "name": "Dr. M. M. Shaijumon",
-        "designation": "Professor",
-        "department": "School of Physics",
-        "institution": "IISER Thiruvananthapuram",
-        "country": "India",
-        "image": "Dr. M. M. Shaijumon.webp"
+        "name": "Dr. Anna Painelli",
+        "designation": "Professor of Physical Chemistry",
+        "department": "",
+        "institution": "Parma University",
+        "country": "Italy",
+        "image": "Dr. Anna Painelli.webp"
     },
     {
         "name": "Dr. Biju Vasudevan Pillai",
@@ -88,36 +80,12 @@
         "image": "Dr. Biju Vasudevan Pillai.webp"
     },
     {
-        "name": "Dr. Subila K. B.",
-        "designation": "Assistant Professor",
-        "department": "School of Chemical Sciences",
-        "institution": "MG University, Kottayam",
+        "name": "Dr. Akkattu T. Biju",
+        "designation": "Associate Professor",
+        "department": "Department of Organic Chemistry",
+        "institution": "IISc Bangalore",
         "country": "India",
-        "image": "Dr. Subila K. B..webp"
-    },
-    {
-        "name": "Dr. Jino George",
-        "designation": "Assistant Professor",
-        "department": "",
-        "institution": "IISER Mohali",
-        "country": "India",
-        "image": "Dr. Jino George.webp"
-    },
-    {
-        "name": "Dr. Shibu E. S.",
-        "designation": "Assistant Professor",
-        "department": "Department of Nanoscience and Technology",
-        "institution": "University of Calicut",
-        "country": "India",
-        "image": "​Dr. Shibu E. S..webp"
-    },
-    {
-        "name": "Dr. Andrea Listorti",
-        "designation": "Researcher",
-        "department": "",
-        "institution": "University of Bari",
-        "country": "Italy",
-        "image": "Dr. Andrea Listorti.webp"
+        "image": "Dr. Akkattu T. Biju.webp"
     },
     {
         "name": "Dr. Shiju N. R.",
@@ -128,60 +96,68 @@
         "image": "Dr. Shiju N. R..webp"
     },
     {
-        "name": "Dr. Anu Jacob",
-        "designation": "Researcher",
-        "department": "",
-        "institution": "CIC energiGUNE",
-        "country": "Spain",
-        "image": "Dr. Anu Jacob.webp"
-    },
-    {
-        "name": "Dr. Ermal Ismalaj",
-        "designation": "Research Associate",
-        "department": "Molecular and Functional Biomarkers Radiochemistry & Nuclear Imaging",
-        "institution": "CIC biomaGUNE",
-        "country": "Spain",
-        "image": "Dr. Ermal Ismalaj.webp"
-    },
-    {
-        "name": "Dr. Vinoy Thomas",
-        "designation": "Associate Professor",
-        "department": "Department of Materials Science and Engineering",
-        "institution": "University of Alabama Birmingham (UAB)",
-        "country": "USA",
-        "image": "Dr. Vinoy Thomas.webp"
-    },
-    {
-        "name": "Dr. Akkattu T. Biju",
-        "designation": "Associate Professor",
-        "department": "Department of Organic Chemistry",
-        "institution": "IISc Bangalore",
-        "country": "India",
-        "image": "Dr. Akkattu T. Biju.webp"
-    },
-    {
-        "name": "Dr. Putla Sudarsanam",
-        "designation": "Assistant Professor",
-        "department": "Department of Chemistry",
-        "institution": "IIT Hyderabad",
-        "country": "India",
-        "image": "Dr. Putla Sudarsanam.webp"
-    },
-    {
-        "name": "Dr. Oliver Reiser",
-        "designation": "Professor & Dean of Research",
-        "department": "Institute of Organic Chemistry",
-        "institution": "University of Regensburg",
-        "country": "Germany",
-        "image": "Dr. Oliver Reiser.webp"
-    },
-    {
         "name": "Dr. Biswarup Pathak",
         "designation": "Professor",
         "department": "Department of Chemistry",
         "institution": "IIT Indore",
         "country": "India",
         "image": "Dr. Biswarup Pathak.webp"
+    },
+    {
+        "name": "Dr. Andrea Listorti",
+        "designation": "Researcher",
+        "department": "",
+        "institution": "University of Bari",
+        "country": "Italy",
+        "image": "Dr. Andrea Listorti.webp"
+    },
+    {
+        "name": "Dr. Sreekumar Kurungot",
+        "designation": "Principal Investigator",
+        "department": "",
+        "institution": "National Chemical Laboratory, Pune",
+        "country": "India",
+        "image": "Dr. Sreekumar Kurungot.webp"
+    },
+    {
+        "name": "Dr. Subrahmanyam Ch.",
+        "designation": "Professor",
+        "department": "Department of Chemistry",
+        "institution": "IIT Hyderabad",
+        "country": "India",
+        "image": "Dr. Subrahmanyam Ch.webp"
+    },
+    {
+        "name": "Dr. Sangaraju Shanmugam",
+        "designation": "Professor",
+        "department": "Department of Energy Science & Engineering",
+        "institution": "Daegu",
+        "country": "South Korea",
+        "image": "Dr. Sangaraju Sanmugam.webp"
+    },
+    {
+        "name": "Dr. Sebastian Peter",
+        "designation": "Professor",
+        "department": "Department of Chemistry",
+        "institution": "JNCASR, Bangalore",
+        "country": "India",
+        "image": "Dr. Sebastian Peter.webp"
+    },
+    {
+        "name": "Dr. M. M. Shaijumon",
+        "designation": "Professor",
+        "department": "School of Physics",
+        "institution": "IISER Thiruvananthapuram",
+        "country": "India",
+        "image": "Dr. M. M. Shaijumon.webp"
+    },
+    {
+        "name": "Dr. Vibin Ramakrishnan",
+        "designation": "Professor",
+        "department": "Department of Biosciences and Bioengineering",
+        "institution": "IIT Guwahati",
+        "country": "India",
+        "image": "Dr. Vibin Ramakrishnan.webp"
     },
     {
         "name": "Dr. Kana M Sureshan",
@@ -200,28 +176,20 @@
         "image": "Dr. Pramod Pillai.webp"
     },
     {
-        "name": "Dr. Pradeep T",
-        "designation": "Professor",
-        "department": "Department of Chemistry",
-        "institution": "IIT Madras, Chennai",
-        "country": "India",
-        "image": "Dr. Pradeep T.webp"
-    },
-    {
-        "name": "Dr. Vibin Ramakrishnan",
-        "designation": "Professor",
-        "department": "Department of Biosciences and Bioengineering",
-        "institution": "IIT Guwahati",
-        "country": "India",
-        "image": "Dr. Vibin Ramakrishnan.webp"
-    },
-    {
-        "name": "Dr. Anna Painelli",
-        "designation": "Professor of Physical Chemistry",
+        "name": "Dr. Jino George",
+        "designation": "Assistant Professor",
         "department": "",
-        "institution": "Parma University",
-        "country": "Italy",
-        "image": "Dr. Anna Painelli.webp"
+        "institution": "IISER Mohali",
+        "country": "India",
+        "image": "Dr. Jino George.webp"
+    },
+    {
+        "name": "Dr. Putla Sudarsanam",
+        "designation": "Assistant Professor",
+        "department": "Department of Chemistry",
+        "institution": "IIT Hyderabad",
+        "country": "India",
+        "image": "Dr. Putla Sudarsanam.webp"
     },
     {
         "name": "Dr. Flavio Emery",
@@ -232,11 +200,43 @@
         "image": "Dr. Flavio Emery.webp"
     },
     {
-        "name": "Dr. Sreekumar Kurungot",
-        "designation": "Principal Investigator",
-        "department": "",
-        "institution": "National Chemical Laboratory, Pune",
+        "name": "Dr. Ermal Ismalaj",
+        "designation": "Research Associate",
+        "department": "Molecular and Functional Biomarkers Radiochemistry & Nuclear Imaging",
+        "institution": "CIC biomaGUNE",
+        "country": "Spain",
+        "image": "Dr. Ermal Ismalaj.webp"
+    },
+    {
+        "name": "Dr. Shibu E. S.",
+        "designation": "Assistant Professor",
+        "department": "Department of Nanoscience and Technology",
+        "institution": "University of Calicut",
         "country": "India",
-        "image": "Dr. Sreekumar Kurungot.webp"
+        "image": "​Dr. Shibu E. S..webp"
+    },
+    {
+        "name": "Dr. Subila K. B.",
+        "designation": "Assistant Professor",
+        "department": "Department of Chemical Sciences",
+        "institution": "IISER Kolkata",
+        "country": "India",
+        "image": "Dr. Subila K. B..webp"
+    },
+    {
+        "name": "Dr. Vinoy Thomas",
+        "designation": "Associate Professor",
+        "department": "Department of Materials Science and Engineering",
+        "institution": "University of Alabama Birmingham (UAB)",
+        "country": "USA",
+        "image": "Dr. Vinoy Thomas.webp"
+    },
+    {
+        "name": "Dr. Anu Jacob",
+        "designation": "Researcher",
+        "department": "",
+        "institution": "CIC energiGUNE",
+        "country": "Spain",
+        "image": "Dr. Anu Jacob.webp"
     }
 ]
