@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import styles from "./Footer.module.css";
 
 export default function Footer() {
@@ -46,10 +47,10 @@ export default function Footer() {
             <div className={styles.sub_block}>
               <h4 className={styles.details_title}>Quick Links</h4>
               <nav className={styles.quick_links}>
-                <a href="#home">Home</a>
-                <a href="#about">About</a>
-                <a href="#programs">Programs</a>
-                <a href="#contact">Contact</a>
+                <Link href="/">Home</Link>
+                <Link href="/#about">About</Link>
+                <Link href="/gallery">Gallery</Link>
+                <Link href="/register">Register</Link>
               </nav>
             </div>
             

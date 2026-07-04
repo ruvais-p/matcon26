@@ -64,7 +64,7 @@
   width: 100%;
   max-width: 860px;
   margin: 0 auto;
-  padding: 56px 24px 80px;
+  padding: 100px 24px 80px;
 }
 
 /* ── Page Title Block ── */
@@ -661,6 +661,21 @@
   font-size: 0.85rem;
 }
 
+.feeNote {
+  margin: 12px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted, #a1a1aa);
+  font-style: italic;
+  opacity: 0.75;
+}
+
+/* Merged cells for foreign categories */
+.feeTdMerged {
+  font-style: italic;
+  letter-spacing: 0.02em;
+  border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
 /* ── Submit Row ── */
 
 .submitRow {
@@ -824,7 +839,9 @@
 .applyPayBtn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
+  width: 100%;
   background: var(--accent, #c8f04a);
   color: #020e04;
   font-family: var(--font-outfit, 'Outfit', sans-serif);

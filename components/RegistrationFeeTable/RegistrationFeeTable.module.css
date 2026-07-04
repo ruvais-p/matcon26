@@ -199,6 +199,13 @@
   border-right: none;
 }
 
+/* Merged cells for foreign categories */
+.feeTdMerged {
+  font-style: italic;
+  letter-spacing: 0.02em;
+  border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
 /* ── Deadlines ── */
 .feeDeadlines {
   display: flex;

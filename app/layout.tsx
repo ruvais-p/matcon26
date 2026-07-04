@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, DM_Sans, Inter, Outfit } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -39,8 +41,11 @@ export default function RootLayout({
       className={`${bebasNeue.variable} ${dmSans.variable} ${inter.variable} ${outfit.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
-

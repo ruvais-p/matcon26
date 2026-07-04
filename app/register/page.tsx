@@ -34,7 +34,7 @@ export default function RegisterPage() {
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [isTableScrollable, setIsTableScrollable] = useState(false);
     const [tableScrolled, setTableScrolled] = useState(false);
-    
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const feeTableRef = useRef<HTMLDivElement>(null);
 
@@ -63,7 +63,7 @@ export default function RegisterPage() {
     const handleFileChange = (selectedFile: File) => {
         const validExtensions = [".pdf", ".doc", ".docx"];
         const fileExtension = selectedFile.name.substring(selectedFile.name.lastIndexOf(".")).toLowerCase();
-        
+
         if (!validExtensions.includes(fileExtension)) {
             setErrors((prev) => ({ ...prev, abstract: "Invalid file format. Only PDF, DOC, and DOCX are allowed." }));
             setAbstractFile(null);
@@ -122,7 +122,7 @@ export default function RegisterPage() {
             // 1. Upload abstract file to Supabase storage bucket 'abstracts'
             const fileExt = abstractFile.name.split('.').pop();
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-            
+
             const { data: uploadData, error: uploadError } = await supabase.storage
                 .from("abstracts")
                 .upload(fileName, abstractFile);
@@ -179,9 +179,9 @@ export default function RegisterPage() {
                     <h1 className={styles.successTitle}>Registration Submitted</h1>
                     <p className={styles.successMsg}>
                         Thank you, <strong>{form.name}</strong>. Your registration for{" "}
-                        <strong>MATCON 2026</strong> has been received. 
+                        <strong>MATCON 2026</strong> has been received.
                     </p>
-                    
+
                     <div className={styles.successDetailsGrid}>
                         <div className={styles.successDetailItem}>
                             <span className={styles.successDetailLabel}>Payment ID</span>
@@ -229,15 +229,6 @@ export default function RegisterPage() {
 
     return (
         <div className={styles.page}>
-            {/* Header Bar */}
-            <header className={styles.pageHeader}>
-                <Link href="/" className={styles.headerLogo}>
-                    MATCON <span>2026</span>
-                </Link>
-                <div className={styles.headerMeta}>
-                    <span className={styles.metaTag}>// EVENT_REG</span>
-                </div>
-            </header>
 
             <main className={styles.main}>
                 {/* Page Title Block */}
@@ -275,39 +266,54 @@ export default function RegisterPage() {
                                 <tr>
                                     <th className={styles.feeThCategory} rowSpan={2}>Category</th>
                                     <th className={styles.feeTh} colSpan={2}>Early Bird Registration</th>
-                                    <th className={styles.feeTh} colSpan={2}>Late Registration</th>
+                                    <th className={styles.feeTh} colSpan={2}>Regular Registration</th>
                                     <th className={styles.feeTh}>Spot Registration</th>
                                 </tr>
                                 <tr>
                                     <th className={styles.feeThSub}>Participation</th>
-                                    <th className={styles.feeThSub}>Oral / Poster</th>
+                                    <th className={styles.feeThSub}>Invited Delegates/<br />Oral/Poster</th>
                                     <th className={styles.feeThSub}>Participation</th>
-                                    <th className={styles.feeThSub}>Oral / Poster</th>
+                                    <th className={styles.feeThSub}>Invited Delegates/<br />Oral/Poster</th>
                                     <th className={styles.feeThSub}>Participation</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {/* Indian categories — all 5 columns */}
                                 {[
-                                    { cat: "Students", vals: [3000, 3500, 4000, 4500, 5000] },
+                                    { cat: "Students",          vals: [3000, 3500, 4000, 4500, 5000] },
                                     { cat: "Research Scholars", vals: [3500, 4000, 4500, 5000, 5500] },
-                                    { cat: "Faculty", vals: [6000, 7000, 7000, 8000, 8000] },
-                                    { cat: "Industry", vals: [12000, 15000, 13000, 16000, 14000] },
-                                    { cat: "Foreign Students", vals: [250, 300, 350, 400, 450], usd: true },
-                                    { cat: "Foreign Scholars", vals: [350, 400, 450, 500, 550], usd: true },
-                                    { cat: "Foreign Faculty", vals: [500, 600, 600, 700, 700], usd: true },
-                                ].map(({ cat, vals, usd }) => (
+                                    { cat: "Faculty",           vals: [6000, 7000, 7000, 8000, 8000] },
+                                    { cat: "Industry",          vals: [12000, 15000, 13000, 16000, 14000] },
+                                ].map(({ cat, vals }) => (
                                     <tr key={cat} className={styles.feeTr}>
                                         <td className={styles.feeTdCat}>{cat}</td>
                                         {vals.map((v, i) => (
                                             <td key={i} className={styles.feeTd}>
-                                                {usd ? `$${v}` : `₹${v.toLocaleString("en-IN")}`}
+                                                ₹{v.toLocaleString("en-IN")}
                                             </td>
                                         ))}
+                                    </tr>
+                                ))}
+
+                                {/* Foreign categories — merged participation+oral columns */}
+                                {[
+                                    { cat: "Foreign Scholars", earlyBird: 100, regular: 150, spot: 200 },
+                                    { cat: "Foreign Faculty",  earlyBird: 200, regular: 250, spot: 300 },
+                                ].map(({ cat, earlyBird, regular, spot }) => (
+                                    <tr key={cat} className={styles.feeTr}>
+                                        <td className={styles.feeTdCat}>{cat}</td>
+                                        <td className={styles.feeTd} colSpan={2}>${earlyBird}</td>
+                                        <td className={styles.feeTd} colSpan={2}>${regular}</td>
+                                        <td className={styles.feeTd}>${spot}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
+
+                    <p className={styles.feeNote}>
+                        * An 18% GST will be applicable in addition to the registration fee.
+                    </p>
 
                     <div className={styles.feeDeadlines}>
                         <span className={styles.feeDeadline}>
@@ -315,7 +321,7 @@ export default function RegisterPage() {
                         </span>
                         <span className={styles.feeDeadlineSep}>|</span>
                         <span className={styles.feeDeadline}>
-                            Late Registration deadline: <strong>October 25</strong>
+                            Regular Registration deadline: <strong>October 25</strong>
                         </span>
                     </div>
 
@@ -339,7 +345,7 @@ export default function RegisterPage() {
                             <InfoIcon />
                         </div>
                         <p className={styles.noteAlertText}>
-                            after completing the payment using above link, submit this from to complete the registration.
+                            after completing the payment using above link, submit this form to complete the registration.
                         </p>
                     </div>
                 </div>
@@ -456,7 +462,7 @@ export default function RegisterPage() {
                                 <label className={styles.label}>
                                     Abstract (PDF / Word / DOCX) <span className={styles.required}>*</span>
                                 </label>
-                                <div 
+                                <div
                                     className={`${styles.fileDropzone} ${errors.abstract ? styles.inputError : ""} ${submitting ? styles.disabledDropzone : ""}`}
                                     onDragOver={(e) => !submitting && e.preventDefault()}
                                     onDrop={(e) => {
@@ -466,7 +472,7 @@ export default function RegisterPage() {
                                         if (droppedFile) handleFileChange(droppedFile);
                                     }}
                                 >
-                                    <input 
+                                    <input
                                         type="file"
                                         ref={fileInputRef}
                                         onChange={(e) => {
@@ -493,9 +499,9 @@ export default function RegisterPage() {
                                                 <span className={styles.fileName}>{abstractFile.name}</span>
                                                 <span className={styles.fileSize}>{(abstractFile.size / (1024 * 1024)).toFixed(2)} MB</span>
                                             </div>
-                                            <button 
-                                                type="button" 
-                                                className={styles.removeFileBtn} 
+                                            <button
+                                                type="button"
+                                                className={styles.removeFileBtn}
                                                 onClick={handleRemoveFile}
                                                 disabled={submitting}
                                             >
@@ -590,9 +596,9 @@ export default function RegisterPage() {
                         <p className={styles.submitNote}>
                             Fields marked with <span className={styles.required}>*</span> are required.
                         </p>
-                        <button 
-                            type="submit" 
-                            className={styles.submitBtn} 
+                        <button
+                            type="submit"
+                            className={styles.submitBtn}
                             id="submit-btn"
                             disabled={submitting}
                         >
@@ -603,11 +609,6 @@ export default function RegisterPage() {
                 </form>
             </main>
 
-            {/* Footer Strip */}
-            <footer className={styles.pageFooter}>
-                <span>© 2026 Department of Applied Chemistry, CUSAT</span>
-                <span className={styles.metaTag}>// MATCON_INTL</span>
-            </footer>
         </div>
     );
 }

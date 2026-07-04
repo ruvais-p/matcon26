@@ -1,0 +1,454 @@
+/* ═══════════════════════════════════════════════
+   About Page — about.module.css
+   Dark theme: #020e04 bg, #c8f04a accent
+   ═══════════════════════════════════════════════ */
+
+.page {
+  min-height: 100vh;
+  background: var(--bg, #020e04);
+  color: var(--text, #f2f2f2);
+  font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
+}
+
+/* ── Hero Banner ── */
+.heroBanner {
+  position: relative;
+  padding: 140px 40px 80px;
+  text-align: center;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(200, 240, 74, 0.08);
+}
+
+.heroBanner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 60% at 50% 0%, rgba(200, 240, 74, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.heroBannerInner {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.metaTag {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 0.7rem;
+  color: var(--accent, #c8f04a);
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.heroTitle {
+  font-family: var(--font-bebas-neue, 'Bebas Neue', sans-serif);
+  font-size: clamp(4rem, 12vw, 9rem);
+  letter-spacing: 0.08em;
+  color: #fff;
+  margin: 0 0 8px;
+  line-height: 1;
+}
+
+.heroSub {
+  font-family: var(--font-outfit, 'Outfit', sans-serif);
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted, #a1a1aa);
+  margin: 0 0 28px;
+}
+
+.heroDivider {
+  width: 80px;
+  height: 2px;
+  background: var(--accent, #c8f04a);
+  margin: 0 auto;
+  border-radius: 2px;
+  box-shadow: 0 0 16px rgba(200, 240, 74, 0.4);
+}
+
+/* ── Container ── */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px 100px;
+}
+
+/* ── Section ── */
+.section {
+  padding: 80px 0;
+  scroll-margin-top: 80px;
+}
+
+.sectionLabel {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  color: var(--accent, #c8f04a);
+  opacity: 0.6;
+  text-transform: uppercase;
+  margin-bottom: 36px;
+}
+
+.sectionTitle {
+  font-family: var(--font-bebas-neue, 'Bebas Neue', sans-serif);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: 0.04em;
+  color: #fff;
+  margin: 0 0 20px;
+  line-height: 1.1;
+}
+
+.accent {
+  color: var(--accent, #c8f04a);
+}
+
+.sectionText p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: rgba(242, 242, 242, 0.8);
+  margin: 0 0 16px;
+}
+
+.sectionText p strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── Two-column grid ── */
+.sectionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+/* ── Stats row ── */
+.statRow {
+  display: flex;
+  gap: 24px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+  background: rgba(200, 240, 74, 0.04);
+  border: 1px solid rgba(200, 240, 74, 0.12);
+  border-radius: 4px;
+  min-width: 80px;
+  flex: 1;
+}
+
+.statNum {
+  font-family: var(--font-bebas-neue, 'Bebas Neue', sans-serif);
+  font-size: 1.8rem;
+  color: var(--accent, #c8f04a);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  color: var(--text-muted, #a1a1aa);
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+}
+
+/* ── Divider ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200, 240, 74, 0.15), transparent);
+}
+
+/* ── 2×2 Image grid ── */
+.imageGrid2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+  height: 420px;
+}
+
+.imageCell {
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.imageCell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.85) saturate(0.9);
+  transition: transform 0.4s ease, filter 0.3s ease;
+}
+
+.imageCell:hover img {
+  transform: scale(1.04);
+  filter: brightness(1) saturate(1);
+}
+
+/* ── Conference Card ── */
+.conferenceCard {
+  position: relative;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(200, 240, 74, 0.12);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.conferenceCardAccent {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent, #c8f04a), rgba(200, 240, 74, 0.3));
+}
+
+.conferenceCardBody {
+  padding: 48px 52px;
+}
+
+.conferenceEdition {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+
+.editionNum {
+  font-family: var(--font-bebas-neue, 'Bebas Neue', sans-serif);
+  font-size: 5rem;
+  color: rgba(200, 240, 74, 0.12);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.editionSub {
+  font-family: var(--font-outfit, 'Outfit', sans-serif);
+  font-size: 0.85rem;
+  color: var(--accent, #c8f04a);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.conferenceCardBody p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: rgba(242, 242, 242, 0.8);
+  margin: 0 0 16px;
+  max-width: 780px;
+}
+
+.conferenceCardBody p strong {
+  color: #fff;
+}
+
+.confHighlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.highlight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  padding: 10px 18px;
+}
+
+.highlightIcon {
+  font-size: 1rem;
+}
+
+.highlightText {
+  font-family: var(--font-outfit, 'Outfit', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(242, 242, 242, 0.75);
+  letter-spacing: 0.04em;
+}
+
+/* ── Kochi Mosaic ── */
+.kochiMosaic {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 10px;
+}
+
+.mosaicLarge {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 260px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mosaicLarge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.75) saturate(0.85);
+  transition: filter 0.3s ease;
+}
+
+.mosaicLarge:hover img { filter: brightness(0.9) saturate(1); }
+
+.mosaicLabel {
+  position: absolute;
+  bottom: 16px;
+  left: 20px;
+  font-family: var(--font-bebas-neue, 'Bebas Neue', sans-serif);
+  font-size: 2rem;
+  color: #fff;
+  letter-spacing: 0.12em;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+
+.mosaicSmallGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.mosaicSmall {
+  height: 100px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mosaicSmall img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.8) saturate(0.8);
+  transition: transform 0.3s ease, filter 0.3s;
+}
+
+.mosaicSmall:hover img {
+  transform: scale(1.08);
+  filter: brightness(1) saturate(1);
+}
+
+/* ── CUSAT Logo Row ── */
+.cusatLogoRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.cusatLogo {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter: brightness(0.95);
+  flex-shrink: 0;
+}
+
+.cusatAbbr {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 0.7rem;
+  color: var(--accent, #c8f04a);
+  letter-spacing: 0.14em;
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* ── CUSAT 3×2 image grid ── */
+.cusatImageGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  height: 420px;
+}
+
+.cusatImageCell {
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cusatImageCell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.82) saturate(0.88);
+  transition: transform 0.4s ease, filter 0.3s;
+}
+
+.cusatImageCell:hover img {
+  transform: scale(1.05);
+  filter: brightness(1) saturate(1);
+}
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  .sectionGrid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .imageGrid2x2,
+  .cusatImageGrid {
+    height: auto;
+  }
+
+  .imageGrid2x2 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 180px 180px;
+  }
+
+  .cusatImageGrid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 140px 140px;
+  }
+
+  .mosaicSmallGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .heroBanner { padding: 120px 20px 60px; }
+  .container  { padding: 0 20px 60px; }
+  .section    { padding: 56px 0; }
+
+  .conferenceCardBody { padding: 28px 24px; }
+
+  .imageGrid2x2 {
+    grid-template-rows: 140px 140px;
+  }
+
+  .cusatImageGrid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 120px);
+  }
+
+  .mosaicSmallGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mosaicSmall { height: 90px; }
+
+  .statRow { gap: 12px; }
+}

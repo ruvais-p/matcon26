@@ -4,22 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./RegistrationFeeTable.module.css";
 import Link from "next/link";
 
-type FeeRow = {
-  cat: string;
-  vals: readonly number[];
-  usd?: boolean;
-};
-
-const FEE_ROWS: FeeRow[] = [
-  { cat: "Students",          vals: [3000, 3500, 4000, 4500, 5000] },
-  { cat: "Research Scholars", vals: [3500, 4000, 4500, 5000, 5500] },
-  { cat: "Faculty",           vals: [6000, 7000, 7000, 8000, 8000] },
-  { cat: "Industry",          vals: [12000, 15000, 13000, 16000, 14000] },
-  { cat: "Foreign Students",  vals: [250, 300, 350, 400, 450], usd: true },
-  { cat: "Foreign Scholars",  vals: [350, 400, 450, 500, 550], usd: true },
-  { cat: "Foreign Faculty",   vals: [500, 600, 600, 700, 700], usd: true },
-];
-
 export default function RegistrationFeeTable() {
   const [isScrollable, setIsScrollable] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
@@ -66,31 +50,55 @@ export default function RegistrationFeeTable() {
             <tr>
               <th className={styles.feeThCategory} rowSpan={2}>Category</th>
               <th className={styles.feeTh} colSpan={2}>Early Bird Registration</th>
-              <th className={styles.feeTh} colSpan={2}>Late Registration</th>
+              <th className={styles.feeTh} colSpan={2}>Regular Registration</th>
               <th className={styles.feeTh}>Spot Registration</th>
             </tr>
             <tr>
               <th className={styles.feeThSub}>Participation</th>
-              <th className={styles.feeThSub}>Oral / Poster</th>
+              <th className={styles.feeThSub}>Invited Delegates/<br />Oral/Poster</th>
               <th className={styles.feeThSub}>Participation</th>
-              <th className={styles.feeThSub}>Oral / Poster</th>
+              <th className={styles.feeThSub}>Invited Delegates/<br />Oral/Poster</th>
               <th className={styles.feeThSub}>Participation</th>
             </tr>
           </thead>
           <tbody>
-            {FEE_ROWS.map(({ cat, vals, usd }) => (
+            {/* Indian categories — all 5 columns */}
+            {[
+              { cat: "Students",          vals: [3000, 3500, 4000, 4500, 5000] },
+              { cat: "Research Scholars", vals: [3500, 4000, 4500, 5000, 5500] },
+              { cat: "Faculty",           vals: [6000, 7000, 7000, 8000, 8000] },
+              { cat: "Industry",          vals: [12000, 15000, 13000, 16000, 14000] },
+            ].map(({ cat, vals }) => (
               <tr key={cat} className={styles.feeTr}>
                 <td className={styles.feeTdCat}>{cat}</td>
                 {vals.map((v, i) => (
                   <td key={i} className={styles.feeTd}>
-                    {usd ? `$${v}` : `₹${v.toLocaleString("en-IN")}`}
+                    ₹{v.toLocaleString("en-IN")}
                   </td>
                 ))}
+              </tr>
+            ))}
+
+            {/* Foreign categories — merged participation+oral columns */}
+            {[
+              { cat: "Foreign Scholars", earlyBird: 100, regular: 150, spot: 200 },
+              { cat: "Foreign Faculty",  earlyBird: 200, regular: 250, spot: 300 },
+            ].map(({ cat, earlyBird, regular, spot }) => (
+              <tr key={cat} className={styles.feeTr}>
+                <td className={styles.feeTdCat}>{cat}</td>
+                <td className={`${styles.feeTd} ${styles.feeTdMerged}`} colSpan={2}>${earlyBird}</td>
+                <td className={`${styles.feeTd} ${styles.feeTdMerged}`} colSpan={2}>${regular}</td>
+                <td className={styles.feeTd}>${spot}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* ── GST Note ── */}
+      <p className={styles.feeNote}>
+        * An 18% GST will be applicable in addition to the registration fee.
+      </p>
 
       {/* ── Deadlines ── */}
       <div className={styles.feeDeadlines}>
@@ -99,10 +107,9 @@ export default function RegistrationFeeTable() {
         </span>
         <span className={styles.feeDeadlineSep}>|</span>
         <span className={styles.feeDeadline}>
-          Late Registration deadline: <strong>October 25</strong>
+          Regular Registration deadline: <strong>October 25</strong>
         </span>
       </div>
-      <p className={styles.feeNote}>* All fees are excluding GST.</p>
 
       {/* ── Register CTA ── */}
       <div className={styles.registerRow}>
