@@ -17,6 +17,8 @@ type Booking = {
   accommodation_needed: string;
   status: string;
   created_at: string;
+  type: string;
+  theme: string;
 };
 
 type DashboardProps = {
@@ -57,6 +59,8 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
         name: selectedTicketBooking.name,
         paymentId: selectedTicketBooking.payment_id,
         email: selectedTicketBooking.email,
+        type: selectedTicketBooking.type || "",
+        theme: selectedTicketBooking.theme || "",
         food: selectedTicketBooking.food_preference,
         accommodation: selectedTicketBooking.accommodation_needed,
         event: "MATCON 2026"
@@ -140,7 +144,9 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
       b.name.toLowerCase().includes(searchLower) ||
       b.email.toLowerCase().includes(searchLower) ||
       b.phone.includes(searchLower) ||
-      b.payment_id.toLowerCase().includes(searchLower);
+      b.payment_id.toLowerCase().includes(searchLower) ||
+      (b.type && b.type.toLowerCase().includes(searchLower)) ||
+      (b.theme && b.theme.toLowerCase().includes(searchLower));
 
     return matchesTab && matchesSearch;
   });
@@ -369,6 +375,7 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
                     <th>Payment ID</th>
                     <th>Guest Details</th>
                     <th>Abstract</th>
+                    <th>Presentation</th>
                     <th>Food & Acc.</th>
                     <th>Verification Status</th>
                     <th>Actions</th>
@@ -410,6 +417,16 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
                           ) : (
                             <span className={styles.noFile}>No File</span>
                           )}
+                        </td>
+                        <td className={styles.tdPresentation}>
+                          <div className={styles.badgeCol}>
+                            <span className={`${styles.badge} ${b.type === "oral" ? styles.badgeOral : styles.badgePoster}`}>
+                              {b.type ? (b.type.charAt(0).toUpperCase() + b.type.slice(1)) : "N/A"}
+                            </span>
+                            <span className={styles.themeText} title={b.theme}>
+                              {b.theme || "N/A"}
+                            </span>
+                          </div>
                         </td>
                         <td className={styles.tdBadges}>
                           <div className={styles.badgeCol}>
@@ -469,7 +486,7 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={7} className={styles.emptyCell}>
+                      <td colSpan={8} className={styles.emptyCell}>
                         No registrations match your search filters.
                       </td>
                     </tr>
@@ -550,6 +567,16 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
                   <div>
                     <span className={styles.tLabel}>Payment Reference</span>
                     <span className={styles.tVal}>{selectedTicketBooking.payment_id}</span>
+                  </div>
+                  <div>
+                    <span className={styles.tLabel}>Presentation Type</span>
+                    <span className={styles.tVal} style={{ textTransform: "capitalize" }}>
+                      {selectedTicketBooking.type || "N/A"}
+                    </span>
+                  </div>
+                  <div style={{ gridColumn: "span 2" }}>
+                    <span className={styles.tLabel}>Theme</span>
+                    <span className={styles.tVal}>{selectedTicketBooking.theme || "N/A"}</span>
                   </div>
                   <div>
                     <span className={styles.tLabel}>Food Choice</span>

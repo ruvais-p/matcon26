@@ -852,6 +852,32 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.tdPresentation {
+  min-width: 180px;
+}
+
+.badgeOral {
+  background: rgba(200, 240, 74, 0.08);
+  color: var(--accent, #c8f04a);
+  border: 1px solid rgba(200, 240, 74, 0.2);
+}
+
+.badgePoster {
+  background: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.themeText {
+  font-size: 0.8rem;
+  color: #a1a1aa;
+  display: block;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tdStatus {
   min-width: 140px;
 }

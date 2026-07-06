@@ -12,6 +12,8 @@ type FormData = {
     phone: string;
     foodPreference: string;
     accommodation: string;
+    type: string;
+    theme: string;
 };
 
 const INITIAL_FORM: FormData = {
@@ -21,9 +23,30 @@ const INITIAL_FORM: FormData = {
     phone: "",
     foodPreference: "",
     accommodation: "",
+    type: "",
+    theme: "",
 };
 
-type FormErrors = Partial<Record<keyof FormData, string>> & { abstract?: string };
+const THEMES = [
+  "Green and Sustainable Chemistry",
+  "Smart framework materials",
+  "Energy and Photovoltaics",
+  "Frontiers in Computational Modelling and AI",
+  "Polymer Science and Engineering",
+  "Materials for Space Technology",
+  "Supramolecular Materials and Assemblies",
+  "Sensors and Biosensors",
+  "Next generation Nanomaterials",
+  "Nanomaterials for Biomedical Applications",
+  "Drug Discovery and Drug Delivery",
+  "Emerging Techniques in Spectroscopy",
+  "Catalysis and Synthetic Organic Chemistry",
+  "Advanced Functional Materials",
+  "Nuclear Materials",
+  "Separation Science and Technology"
+];
+
+type FormErrors = Partial<Record<keyof FormData, string>> & { abstract?: string; type?: string; theme?: string };
 
 export default function RegisterPage() {
     const [form, setForm] = useState<FormData>(INITIAL_FORM);
@@ -61,11 +84,11 @@ export default function RegisterPage() {
     };
 
     const handleFileChange = (selectedFile: File) => {
-        const validExtensions = [".pdf", ".doc", ".docx"];
+        const validExtensions = [".doc", ".docx"];
         const fileExtension = selectedFile.name.substring(selectedFile.name.lastIndexOf(".")).toLowerCase();
 
         if (!validExtensions.includes(fileExtension)) {
-            setErrors((prev) => ({ ...prev, abstract: "Invalid file format. Only PDF, DOC, and DOCX are allowed." }));
+            setErrors((prev) => ({ ...prev, abstract: "Invalid file format. Only DOC and DOCX are allowed." }));
             setAbstractFile(null);
             return;
         }
@@ -94,6 +117,8 @@ export default function RegisterPage() {
         if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
             errs.email = "A valid email address is required.";
         if (!form.phone.trim()) errs.phone = "Phone number is required.";
+        if (!form.type) errs.type = "Please select a presentation type.";
+        if (!form.theme) errs.theme = "Please select a conference theme.";
         if (!abstractFile) errs.abstract = "Abstract file is required.";
         if (!form.foodPreference) errs.foodPreference = "Please select a food preference.";
         if (!form.accommodation) errs.accommodation = "Please indicate if accommodation is needed.";
@@ -149,6 +174,8 @@ export default function RegisterPage() {
                         abstract_url: publicUrl,
                         food_preference: form.foodPreference,
                         accommodation_needed: form.accommodation,
+                        type: form.type,
+                        theme: form.theme,
                     }
                 ]);
 
@@ -194,6 +221,14 @@ export default function RegisterPage() {
                         <div className={styles.successDetailItem}>
                             <span className={styles.successDetailLabel}>Phone</span>
                             <span className={styles.successDetailValue}>{form.phone}</span>
+                        </div>
+                        <div className={styles.successDetailItem}>
+                            <span className={styles.successDetailLabel}>Presentation Type</span>
+                            <span className={styles.successDetailValue} style={{ textTransform: "capitalize" }}>{form.type}</span>
+                        </div>
+                        <div className={styles.successDetailItem}>
+                            <span className={styles.successDetailLabel}>Theme</span>
+                            <span className={styles.successDetailValue}>{form.theme}</span>
                         </div>
                         <div className={styles.successDetailItem}>
                             <span className={styles.successDetailLabel}>Food Preference</span>
@@ -457,10 +492,73 @@ export default function RegisterPage() {
                                 )}
                             </div>
 
+                            {/* Presentation Type (Oral or Poster) */}
+                            <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
+                                <label className={styles.label}>
+                                    Presentation Type <span className={styles.required}>*</span>
+                                </label>
+                                <div className={styles.optionGroupRow} role="group" aria-label="Presentation Type">
+                                    {[
+                                        { val: "oral", label: "Oral" },
+                                        { val: "poster", label: "Poster" },
+                                    ].map(({ val, label }) => (
+                                        <label key={val} className={`${styles.optionLabel} ${submitting ? styles.disabledLabel : ""}`}>
+                                            <input
+                                                type="radio"
+                                                name="type"
+                                                value={val}
+                                                checked={form.type === val}
+                                                onChange={handleChange}
+                                                className={styles.radioInput}
+                                                id={`type_${val}`}
+                                                disabled={submitting}
+                                            />
+                                            <span className={styles.radioCustom} />
+                                            <span>{label}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                                {errors.type && (
+                                    <p className={styles.errorMsg} id="type-error" role="alert">
+                                        {errors.type}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Conference Theme Dropdown */}
+                            <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
+                                <label className={styles.label} htmlFor="theme">
+                                    Conference Theme <span className={styles.required}>*</span>
+                                </label>
+                                <div className={styles.selectWrapper}>
+                                    <select
+                                        id="theme"
+                                        name="theme"
+                                        value={form.theme}
+                                        onChange={handleChange}
+                                        className={`${styles.select} ${errors.theme ? styles.inputError : ""}`}
+                                        disabled={submitting}
+                                    >
+                                        <option value="">-- Select a Theme --</option>
+                                        {THEMES.map((theme) => (
+                                            <option key={theme} value={theme}>
+                                                {theme}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <ChevronDownIcon />
+                                </div>
+                                {errors.theme && (
+                                    <p className={styles.errorMsg} id="theme-error" role="alert">
+                                        {errors.theme}
+                                    </p>
+                                )}
+                            </div>
+
                             {/* Abstract File */}
                             <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
                                 <label className={styles.label}>
-                                    Abstract (PDF / Word / DOCX) <span className={styles.required}>*</span>
+                                    Abstract (Word / DOCX) <span className={styles.required}>*</span>
                                 </label>
                                 <div
                                     className={`${styles.fileDropzone} ${errors.abstract ? styles.inputError : ""} ${submitting ? styles.disabledDropzone : ""}`}
@@ -479,7 +577,7 @@ export default function RegisterPage() {
                                             const selectedFile = e.target.files?.[0];
                                             if (selectedFile) handleFileChange(selectedFile);
                                         }}
-                                        accept=".pdf,.doc,.docx"
+                                        accept=".doc,.docx"
                                         style={{ display: "none" }}
                                         id="abstract"
                                         disabled={submitting}
@@ -490,7 +588,7 @@ export default function RegisterPage() {
                                             <p className={styles.dropzoneText}>
                                                 Drag and drop your abstract file here, or <span>browse</span>
                                             </p>
-                                            <p className={styles.dropzoneHint}>Supports PDF, DOC, or DOCX (Max 10MB)</p>
+                                            <p className={styles.dropzoneHint}>Supports DOC or DOCX (Max 10MB)</p>
                                         </div>
                                     ) : (
                                         <div className={styles.fileSelectedInfo}>
@@ -514,8 +612,7 @@ export default function RegisterPage() {
                                     <p className={styles.errorMsg} role="alert">
                                         {errors.abstract}
                                     </p>
-                                )}
-                            </div>
+                                )}\n                            </div>
 
                             {/* Food Preference */}
                             <div className={styles.fieldGroup}>
@@ -762,5 +859,21 @@ const SpinnerIcon = () => (
         <line x1="18" y1="12" x2="22" y2="12" />
         <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" />
         <line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
+    </svg>
+);
+
+const ChevronDownIcon = () => (
+    <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+    >
+        <polyline points="6 9 12 15 18 9" />
     </svg>
 );
