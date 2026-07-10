@@ -332,14 +332,23 @@ export default function RegisterPage() {
 
                                 {/* Foreign categories — merged participation+oral columns */}
                                 {[
-                                    { cat: "Foreign Scholars", earlyBird: 100, regular: 150, spot: 200 },
-                                    { cat: "Foreign Faculty",  earlyBird: 200, regular: 250, spot: 300 },
-                                ].map(({ cat, earlyBird, regular, spot }) => (
+                                    { cat: "Foreign Scholars", earlyBirdInr: 10000, regularInr: 15000, spotInr: 20000, earlyBirdUsd: 100, regularUsd: 150, spotUsd: 200 },
+                                    { cat: "Foreign Faculty",  earlyBirdInr: 20000, regularInr: 25000, spotInr: 30000, earlyBirdUsd: 200, regularUsd: 250, spotUsd: 300 },
+                                ].map(({ cat, earlyBirdInr, regularInr, spotInr, earlyBirdUsd, regularUsd, spotUsd }) => (
                                     <tr key={cat} className={styles.feeTr}>
                                         <td className={styles.feeTdCat}>{cat}</td>
-                                        <td className={styles.feeTd} colSpan={2}>${earlyBird}</td>
-                                        <td className={styles.feeTd} colSpan={2}>${regular}</td>
-                                        <td className={styles.feeTd}>${spot}</td>
+                                        <td className={styles.feeTd} colSpan={2}>
+                                            ₹{earlyBirdInr.toLocaleString("en-IN")}<br />
+                                            <span style={{ fontSize: "0.85em", opacity: 0.8 }}>(~${earlyBirdUsd})</span>
+                                        </td>
+                                        <td className={styles.feeTd} colSpan={2}>
+                                            ₹{regularInr.toLocaleString("en-IN")}<br />
+                                            <span style={{ fontSize: "0.85em", opacity: 0.8 }}>(~${regularUsd})</span>
+                                        </td>
+                                        <td className={styles.feeTd}>
+                                            ₹{spotInr.toLocaleString("en-IN")}<br />
+                                            <span style={{ fontSize: "0.85em", opacity: 0.8 }}>(~${spotUsd})</span>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
