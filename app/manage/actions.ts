@@ -76,6 +76,9 @@ export async function updateBookingStatus(id: string, status: string) {
   return { success: true, data };
 }
 
+import nodemailer from "nodemailer";
+import QRCode from "qrcode";
+
 export async function confirmAndSendTicket(id: string) {
   // Check auth
   const cookieStore = await cookies();
@@ -105,8 +108,83 @@ export async function confirmAndSendTicket(id: string) {
     throw new Error(updateError.message);
   }
 
-  // Here, we simulate generating a ticket QR code and sending it.
-  console.log(`[TICKET SENT] Booking ${id} confirmed. Email sent to ${booking.email}`);
+  try {
+    const qrData = JSON.stringify({
+      bookingId: booking.id,
+      name: booking.name,
+      paymentId: booking.payment_id,
+      email: booking.email,
+      type: booking.type || "",
+      theme: booking.theme || "",
+      food: booking.food_preference,
+      accommodation: booking.accommodation_needed,
+      event: "MATCON 2026"
+    });
+
+    const qrCodeDataUrl = await QRCode.toDataURL(qrData, { width: 300, margin: 2, color: { dark: "#020e04", light: "#ffffff" } });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: `"MATCON 2026" <${process.env.EMAIL_USER}>`,
+      to: booking.email,
+      subject: "Registration Confirmed - MATCON 2026 Ticket",
+      html: `
+        <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden;">
+          <div style="background-color: #020e04; color: #fff; padding: 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 24px;">MATCON 2026</h1>
+            <p style="margin: 5px 0 0; font-size: 14px;">Admission Ticket</p>
+          </div>
+          <div style="padding: 30px;">
+            <h2 style="color: #4CAF50; font-size: 20px; margin-top: 0;">Registration Confirmed!</h2>
+            <p>Dear <strong>${booking.name}</strong>,</p>
+            <p>Your registration for MATCON 2026 has been successfully verified and confirmed.</p>
+            
+            <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Payment Reference:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">${booking.payment_id}</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Presentation Type:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right; text-transform: capitalize;">${booking.type || "N/A"}</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Theme:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">${booking.theme || "N/A"}</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Food Choice:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">${booking.food_preference === "veg" ? "Vegetarian" : "Non-Vegetarian"}</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Accommodation:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">${booking.accommodation_needed === "yes" ? "Requested" : "Not Required"}</td></tr>
+            </table>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <p style="font-size: 14px; color: #666; margin-bottom: 10px;">Please present this QR code at the event check-in</p>
+              <img src="cid:ticket_qr" alt="Ticket QR Code" style="width: 200px; height: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 8px;" />
+            </div>
+            
+            <p style="font-size: 14px; color: #666;">We look forward to seeing you at the conference.</p>
+          </div>
+          <div style="background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #888;">
+            © 2026 Department of Applied Chemistry, CUSAT
+          </div>
+        </div>
+      `,
+      attachments: [
+        {
+          filename: 'ticket-qr.png',
+          path: qrCodeDataUrl,
+          cid: 'ticket_qr'
+        }
+      ]
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`[TICKET SENT] Booking ${id} confirmed. Email sent to ${booking.email}`);
+
+  } catch (mailError: any) {
+    console.error("Mail sending failed:", mailError);
+    return {
+      success: false,
+      message: "Ticket confirmed but failed to send email: " + mailError.message,
+    };
+  }
 
   return {
     success: true,

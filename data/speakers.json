@@ -81,7 +81,7 @@
     },
     {
         "name": "Dr. Akkattu T. Biju",
-        "designation": "Associate Professor",
+        "designation": "Professor",
         "department": "Department of Organic Chemistry",
         "institution": "IISc Bangalore",
         "country": "India",
@@ -238,5 +238,13 @@
         "institution": "CIC energiGUNE",
         "country": "Spain",
         "image": "Dr. Anu Jacob.webp"
+    },
+    {
+        "name": "Lakshmi Balagopal",
+        "designation": "R&D Director Asia",
+        "department": "",
+        "institution": "FMC CORPORATION",
+        "country": "Singapore",
+        "image": "Lakshmi Balagopal.jpeg"
     }
 ]

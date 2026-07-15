@@ -176,6 +176,7 @@ export default function RegisterPage() {
                         accommodation_needed: form.accommodation,
                         type: form.type,
                         theme: form.theme,
+                        status: "pending",
                     }
                 ]);
 
