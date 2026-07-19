@@ -34,9 +34,6 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
   const [ticketQrUrl, setTicketQrUrl] = useState<string>("");
   const [notification, setNotification] = useState<{ message: string; type: "success" | "error" } | null>(null);
   
-  // Sidebar states
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
-
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 25;
@@ -209,54 +206,25 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
   };
 
   return (
-    <div className={`${styles.dashboardLayout} ${isSidebarExpanded ? "" : styles.sidebarCollapsed}`}>
-      {/* Sidebar Navigation */}
-      <aside className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>
-          {isSidebarExpanded ? (
-            <Link href="/" className={styles.sidebarLogo}>
-              MATCON <span>2026</span>
-            </Link>
-          ) : (
-            <Link href="/" className={styles.sidebarLogoCollapsed}>
-              M<span>26</span>
-            </Link>
-          )}
-          <button 
-            className={styles.sidebarToggleBtn} 
-            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-            title={isSidebarExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
-          >
-            <MenuIcon />
-          </button>
-        </div>
-
-        <nav className={styles.sidebarNav}>
-          <button className={`${styles.navItem} ${styles.navItemActive}`} aria-current="page">
-            <BookingsIcon />
-            {isSidebarExpanded && <span>Bookings</span>}
-          </button>
-        </nav>
-
-        <div className={styles.sidebarFooter}>
-          <button className={styles.sidebarLogoutBtn} onClick={handleLogout} title="Logout">
-            <LogoutIcon />
-            {isSidebarExpanded && <span>Logout</span>}
-          </button>
-        </div>
-      </aside>
-
+    <div className={styles.dashboardLayout}>
       {/* Main Content Area */}
       <div className={styles.mainContent}>
         {/* Header Bar */}
         <header className={styles.dashboardHeader}>
           <div className={styles.headerLeft}>
-            <span className={styles.dashboardTitle}>Bookings Management</span>
+            <Link href="/" className={styles.headerLogo}>
+              MATCON <span>2026</span>
+            </Link>
             <span className={styles.headerDivider}>|</span>
+            <span className={styles.dashboardTitle}>Bookings Management</span>
             <span className={styles.dashboardBadge}>ADMIN DASHBOARD</span>
           </div>
           <div className={styles.headerMeta}>
             <span className={styles.metaTag}>// SECURE_SYSTEM</span>
+            <button className={styles.headerLogoutBtn} onClick={handleLogout} title="Logout">
+              <LogoutIcon />
+              <span>Logout</span>
+            </button>
           </div>
         </header>
 
@@ -525,11 +493,7 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
           </section>
         </main>
 
-        {/* Footer */}
-        <footer className={styles.pageFooter}>
-          <span>© 2026 Department of Applied Chemistry, CUSAT</span>
-          <span className={styles.metaTag}>// SECURE_ADMIN_CONSOLE</span>
-        </footer>
+
       </div>
 
       {/* Ticket Preview Modal */}

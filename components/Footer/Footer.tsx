@@ -1,8 +1,16 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styles from "./Footer.module.css";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/manage")) {
+    return null;
+  }
   return (
     <footer className={styles.footer} aria-label="Conference Footer">
       <div className={styles.container}>

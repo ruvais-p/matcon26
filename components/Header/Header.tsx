@@ -16,6 +16,10 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
+  if (pathname.startsWith("/manage")) {
+    return null;
+  }
+
   // Only show the transparent-at-top behaviour on the homepage
   const isHome = pathname === "/";
 

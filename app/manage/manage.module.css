@@ -233,6 +233,7 @@
 .headerMeta {
   display: flex;
   align-items: center;
+  gap: 20px;
 }
 
 .metaTag {
@@ -242,6 +243,27 @@
   letter-spacing: 0.12em;
   color: var(--accent, #c8f04a);
   opacity: 0.85;
+}
+
+.headerLogoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a1a1aa;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+}
+
+.headerLogoutBtn:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.02);
 }
 
 /* ── Admin Login Card Layout ── */
@@ -746,7 +768,7 @@
 
 .bookingRow td {
   padding: 18px 24px;
-  vertical-align: middle;
+  vertical-align: top;
 }
 
 .tdDate {

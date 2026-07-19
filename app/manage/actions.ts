@@ -78,6 +78,7 @@ export async function updateBookingStatus(id: string, status: string) {
 
 import nodemailer from "nodemailer";
 import QRCode from "qrcode";
+import crypto from "crypto";
 
 export async function confirmAndSendTicket(id: string) {
   // Check auth
@@ -121,7 +122,16 @@ export async function confirmAndSendTicket(id: string) {
       event: "MATCON 2026"
     });
 
-    const qrCodeDataUrl = await QRCode.toDataURL(qrData, { width: 300, margin: 2, color: { dark: "#020e04", light: "#ffffff" } });
+    // Encrypt QR data so only admin can decrypt it
+    const secretKey = process.env.ADMIN_PASS || "matcon2026_default_secret";
+    const key = crypto.createHash('sha256').update(String(secretKey)).digest('base64').substring(0, 32); 
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(key), iv);
+    let encryptedData = cipher.update(qrData, "utf8", "hex");
+    encryptedData += cipher.final("hex");
+    const finalQrData = iv.toString('hex') + ":" + encryptedData;
+
+    const qrCodeDataUrl = await QRCode.toDataURL(finalQrData, { width: 300, margin: 2, color: { dark: "#000000", light: "#ffffff" } });
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -134,35 +144,50 @@ export async function confirmAndSendTicket(id: string) {
     const mailOptions = {
       from: `"MATCON 2026" <${process.env.EMAIL_USER}>`,
       to: booking.email,
-      subject: "Registration Confirmed - MATCON 2026 Ticket",
+      subject: "Your Official Ticket for MATCON 2026 🎟️",
       html: `
-        <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden;">
-          <div style="background-color: #020e04; color: #fff; padding: 20px; text-align: center;">
-            <h1 style="margin: 0; font-size: 24px;">MATCON 2026</h1>
-            <p style="margin: 5px 0 0; font-size: 14px;">Admission Ticket</p>
+        <div style="font-family: 'Inter', Arial, sans-serif; background-color: #020e04; color: #f2f2f2; max-width: 650px; margin: 0 auto; border-radius: 12px; overflow: hidden; border: 1px solid #c8f04a33; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+          <!-- Header -->
+          <div style="background: linear-gradient(135deg, #020e04 0%, #0a1f0d 100%); padding: 40px 30px; text-align: center; border-bottom: 2px solid #c8f04a;">
+            <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 2px; color: #ffffff;">MATCON <span style="color: #c8f04a;">2026</span></h1>
+            <p style="margin: 10px 0 0; font-size: 16px; color: #a1a1aa; letter-spacing: 1px;">INTERNATIONAL CONFERENCE</p>
+            <p style="margin: 5px 0 0; font-size: 13px; color: #c8f04a; font-weight: bold; text-transform: uppercase;">Materials for a Sustainable Future</p>
           </div>
-          <div style="padding: 30px;">
-            <h2 style="color: #4CAF50; font-size: 20px; margin-top: 0;">Registration Confirmed!</h2>
-            <p>Dear <strong>${booking.name}</strong>,</p>
-            <p>Your registration for MATCON 2026 has been successfully verified and confirmed.</p>
+          
+          <!-- Body -->
+          <div style="padding: 40px 30px; background-color: #051408;">
+            <h2 style="color: #c8f04a; font-size: 22px; margin-top: 0; font-weight: 700;">Registration Confirmed!</h2>
+            <p style="font-size: 16px; line-height: 1.6; color: #d4d4d8;">Dear <strong>${booking.name}</strong>,</p>
+            <p style="font-size: 16px; line-height: 1.6; color: #d4d4d8;">Your registration for MATCON 2026 has been successfully verified. We are thrilled to welcome you to the conference.</p>
             
-            <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Payment Reference:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">${booking.payment_id}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Presentation Type:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right; text-transform: capitalize;">${booking.type || "N/A"}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Theme:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">${booking.theme || "N/A"}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Food Choice:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">${booking.food_preference === "veg" ? "Vegetarian" : "Non-Vegetarian"}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Accommodation:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">${booking.accommodation_needed === "yes" ? "Requested" : "Not Required"}</td></tr>
-            </table>
+            <!-- Ticket Details Card -->
+            <div style="margin: 30px 0; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 20px;">
+              <h3 style="color: #ffffff; margin-top: 0; margin-bottom: 15px; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Attendee Information</h3>
+              <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+                <tr><td style="padding: 10px 0; color: #a1a1aa;">Payment Ref</td><td style="padding: 10px 0; text-align: right; color: #ffffff; font-family: monospace;">${booking.payment_id}</td></tr>
+                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Type</td><td style="padding: 10px 0; text-align: right; color: #ffffff; text-transform: capitalize; border-top: 1px solid rgba(255,255,255,0.05);">${booking.type || "N/A"}</td></tr>
+                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Theme</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05);">${booking.theme || "N/A"}</td></tr>
+                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Food</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05);">${booking.food_preference === "veg" ? "Vegetarian" : "Non-Vegetarian"}</td></tr>
+                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Accommodation</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05);">${booking.accommodation_needed === "yes" ? "Requested" : "Not Required"}</td></tr>
+              </table>
+            </div>
 
-            <div style="text-align: center; margin: 30px 0;">
-              <p style="font-size: 14px; color: #666; margin-bottom: 10px;">Please present this QR code at the event check-in</p>
-              <img src="cid:ticket_qr" alt="Ticket QR Code" style="width: 200px; height: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 8px;" />
+            <!-- QR Code Section -->
+            <div style="text-align: center; margin: 40px 0;">
+              <p style="font-size: 14px; color: #a1a1aa; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Secure Access QR Code</p>
+              <div style="display: inline-block; background: #ffffff; padding: 15px; border-radius: 8px;">
+                <img src="cid:ticket_qr" alt="Ticket QR Code" style="display: block; width: 220px; height: 220px;" />
+              </div>
+              <p style="font-size: 13px; color: #666; margin-top: 15px;">Please present this encrypted QR code at the registration desk.<br/>(Only authorized personnel can scan this code)</p>
             </div>
             
-            <p style="font-size: 14px; color: #666;">We look forward to seeing you at the conference.</p>
+            <p style="font-size: 15px; line-height: 1.6; color: #d4d4d8; text-align: center;">We look forward to your participation and contribution to a sustainable future.</p>
           </div>
-          <div style="background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #888;">
-            © 2026 Department of Applied Chemistry, CUSAT
+          
+          <!-- Footer -->
+          <div style="background-color: #020e04; padding: 20px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid rgba(255,255,255,0.05);">
+            <p style="margin: 0 0 5px 0;">© 2026 Department of Applied Chemistry, CUSAT</p>
+            <p style="margin: 0;">This is an automated message. Please do not reply directly to this email.</p>
           </div>
         </div>
       `,
