@@ -159,16 +159,17 @@ export async function confirmAndSendTicket(id: string) {
             <h2 style="color: #c8f04a; font-size: 22px; margin-top: 0; font-weight: 700;">Registration Confirmed!</h2>
             <p style="font-size: 16px; line-height: 1.6; color: #d4d4d8;">Dear <strong>${booking.name}</strong>,</p>
             <p style="font-size: 16px; line-height: 1.6; color: #d4d4d8;">Your registration for MATCON 2026 has been successfully verified. We are thrilled to welcome you to the conference.</p>
+            <p style="font-size: 15px; line-height: 1.6; color: #a1a1aa;">Registered Email: <span style="color: #ffffff;">${booking.email}</span><br/>Registered Phone: <span style="color: #ffffff;">${booking.phone || "N/A"}</span></p>
             
             <!-- Ticket Details Card -->
             <div style="margin: 30px 0; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 20px;">
               <h3 style="color: #ffffff; margin-top: 0; margin-bottom: 15px; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Attendee Information</h3>
-              <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
-                <tr><td style="padding: 10px 0; color: #a1a1aa;">Payment Ref</td><td style="padding: 10px 0; text-align: right; color: #ffffff; font-family: monospace;">${booking.payment_id}</td></tr>
-                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Type</td><td style="padding: 10px 0; text-align: right; color: #ffffff; text-transform: capitalize; border-top: 1px solid rgba(255,255,255,0.05);">${booking.type || "N/A"}</td></tr>
-                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Theme</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05);">${booking.theme || "N/A"}</td></tr>
-                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Food</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05);">${booking.food_preference === "veg" ? "Vegetarian" : "Non-Vegetarian"}</td></tr>
-                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Accommodation</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05);">${booking.accommodation_needed === "yes" ? "Requested" : "Not Required"}</td></tr>
+              <table style="width: 100%; border-collapse: collapse; font-size: 15px; table-layout: fixed;">
+                <tr><td style="padding: 10px 0; color: #a1a1aa; width: 40%;">Payment Ref</td><td style="padding: 10px 0; text-align: right; color: #ffffff; font-family: monospace; word-break: break-all;">${booking.payment_id}</td></tr>
+                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Type</td><td style="padding: 10px 0; text-align: right; color: #ffffff; text-transform: capitalize; border-top: 1px solid rgba(255,255,255,0.05); word-break: break-word;">${booking.type || "N/A"}</td></tr>
+                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Theme</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05); word-break: break-word;">${booking.theme || "N/A"}</td></tr>
+                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Food</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05); word-break: break-word;">${booking.food_preference === "veg" ? "Vegetarian" : "Non-Vegetarian"}</td></tr>
+                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Accommodation</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05); word-break: break-word;">${booking.accommodation_needed === "yes" ? "Requested" : "Not Required"}</td></tr>
               </table>
             </div>
 
@@ -178,16 +179,24 @@ export async function confirmAndSendTicket(id: string) {
               <div style="display: inline-block; background: #ffffff; padding: 15px; border-radius: 8px;">
                 <img src="cid:ticket_qr" alt="Ticket QR Code" style="display: block; width: 220px; height: 220px;" />
               </div>
-              <p style="font-size: 13px; color: #666; margin-top: 15px;">Please present this encrypted QR code at the registration desk.<br/>(Only authorized personnel can scan this code)</p>
+              <p style="font-size: 13px; color: #666; margin-top: 15px;">Please present this QR code at the registration desk.</p>
             </div>
             
             <p style="font-size: 15px; line-height: 1.6; color: #d4d4d8; text-align: center;">We look forward to your participation and contribution to a sustainable future.</p>
           </div>
           
           <!-- Footer -->
-          <div style="background-color: #020e04; padding: 20px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid rgba(255,255,255,0.05);">
-            <p style="margin: 0 0 5px 0;">© 2026 Department of Applied Chemistry, CUSAT</p>
-            <p style="margin: 0;">This is an automated message. Please do not reply directly to this email.</p>
+          <div style="background-color: #020e04; padding: 30px 20px; text-align: center; font-size: 12px; color: #888; border-top: 1px solid rgba(255,255,255,0.05);">
+            <h4 style="color: #a1a1aa; font-size: 14px; margin-top: 0; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Get in Touch</h4>
+            <p style="margin: 0 0 4px 0; color: #d4d4d8;">Department of Applied Chemistry</p>
+            <p style="margin: 0 0 4px 0;">Cochin University of Science and Technology</p>
+            <p style="margin: 0 0 15px 0;">Kochi, Kerala, India - 682 022</p>
+            <p style="margin: 0 0 4px 0;"><a href="mailto:matcon2026@cusat.ac.in" style="color: #c8f04a; text-decoration: none;">matcon2026@cusat.ac.in</a></p>
+            <p style="margin: 0 0 25px 0;"><a href="tel:+914842575804" style="color: #c8f04a; text-decoration: none;">+91 484 257 5804</a></p>
+            <div style="border-top: 1px solid rgba(255,255,255,0.05); margin: 0 40px 15px 40px; padding-top: 15px;">
+              <p style="margin: 0 0 5px 0;">© 2026 Department of Applied Chemistry, CUSAT</p>
+              <p style="margin: 0; color: #555;">This is an automated message. Please do not reply directly to this email.</p>
+            </div>
           </div>
         </div>
       `,
