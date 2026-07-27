@@ -28,22 +28,22 @@ const INITIAL_FORM: FormData = {
 };
 
 const THEMES = [
-  "Green and Sustainable Chemistry",
-  "Smart framework materials",
-  "Energy and Photovoltaics",
-  "Frontiers in Computational Modelling and AI",
-  "Polymer Science and Engineering",
-  "Materials for Space Technology",
-  "Supramolecular Materials and Assemblies",
-  "Sensors and Biosensors",
-  "Next generation Nanomaterials",
-  "Nanomaterials for Biomedical Applications",
-  "Drug Discovery and Drug Delivery",
-  "Emerging Techniques in Spectroscopy",
-  "Catalysis and Synthetic Organic Chemistry",
-  "Advanced Functional Materials",
-  "Nuclear Materials",
-  "Separation Science and Technology"
+    "Green and Sustainable Chemistry",
+    "Smart framework materials",
+    "Energy and Photovoltaics",
+    "Frontiers in Computational Modelling and AI",
+    "Polymer Science and Engineering",
+    "Materials for Space Technology",
+    "Supramolecular Materials and Assemblies",
+    "Sensors and Biosensors",
+    "Next generation Nanomaterials",
+    "Nanomaterials for Biomedical Applications",
+    "Drug Discovery and Drug Delivery",
+    "Emerging Techniques in Spectroscopy",
+    "Catalysis and Synthetic Organic Chemistry",
+    "Advanced Functional Materials",
+    "Nuclear Materials",
+    "Separation Science and Technology"
 ];
 
 type FormErrors = Partial<Record<keyof FormData, string>> & { abstract?: string; type?: string; theme?: string };
@@ -316,10 +316,10 @@ export default function RegisterPage() {
                             <tbody>
                                 {/* Indian categories — all 5 columns */}
                                 {[
-                                    { cat: "Students",          vals: [3000, 3500, 4000, 4500, 5000] },
+                                    { cat: "Students", vals: [3000, 3500, 4000, 4500, 5000] },
                                     { cat: "Research Scholars", vals: [3500, 4000, 4500, 5000, 5500] },
-                                    { cat: "Faculty",           vals: [6000, 7000, 7000, 8000, 8000] },
-                                    { cat: "Industry",          vals: [12000, 15000, 13000, 16000, 14000] },
+                                    { cat: "Faculty", vals: [6000, 7000, 7000, 8000, 8000] },
+                                    { cat: "Industry", vals: [12000, 15000, 13000, 16000, 14000] },
                                 ].map(({ cat, vals }) => (
                                     <tr key={cat} className={styles.feeTr}>
                                         <td className={styles.feeTdCat}>{cat}</td>
@@ -334,7 +334,7 @@ export default function RegisterPage() {
                                 {/* Foreign categories — merged participation+oral columns */}
                                 {[
                                     { cat: "Foreign Scholars", earlyBirdInr: 10000, regularInr: 15000, spotInr: 20000, earlyBirdUsd: 100, regularUsd: 150, spotUsd: 200 },
-                                    { cat: "Foreign Faculty",  earlyBirdInr: 20000, regularInr: 25000, spotInr: 30000, earlyBirdUsd: 200, regularUsd: 250, spotUsd: 300 },
+                                    { cat: "Foreign Faculty", earlyBirdInr: 20000, regularInr: 25000, spotInr: 30000, earlyBirdUsd: 200, regularUsd: 250, spotUsd: 300 },
                                 ].map(({ cat, earlyBirdInr, regularInr, spotInr, earlyBirdUsd, regularUsd, spotUsd }) => (
                                     <tr key={cat} className={styles.feeTr}>
                                         <td className={styles.feeTdCat}>{cat}</td>
@@ -362,7 +362,7 @@ export default function RegisterPage() {
 
                     <div className={styles.feeDeadlines}>
                         <span className={styles.feeDeadline}>
-                            Early Bird deadline: <strong>July 25</strong>
+                            Early Bird deadline: <strong>August 15</strong>
                         </span>
                         <span className={styles.feeDeadlineSep}>|</span>
                         <span className={styles.feeDeadline}>
