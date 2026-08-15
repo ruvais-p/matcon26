@@ -622,7 +622,7 @@ export default function RegisterPage() {
                                     <p className={styles.errorMsg} role="alert">
                                         {errors.abstract}
                                     </p>
-                                )}\n                            </div>
+                                )}                            </div>
 
                             {/* Food Preference */}
                             <div className={styles.fieldGroup}>
