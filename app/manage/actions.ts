@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 export async function loginAdmin(email: string, pass: string) {
   const adminEmail = process.env.ADMIN_EMAIL;
@@ -41,7 +41,7 @@ export async function fetchAllBookings() {
     return { success: false, error: "Unauthorized access" };
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from("bookings")
     .select("*")
     .order("created_at", { ascending: false });
@@ -62,7 +62,7 @@ export async function updateBookingStatus(id: string, status: string) {
     throw new Error("Unauthorized");
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from("bookings")
     .update({ status })
     .eq("id", id)
@@ -89,6 +89,8 @@ export async function confirmAndSendTicket(id: string) {
   }
 
   // Get booking details
+  const supabaseAdmin = getSupabaseAdmin();
+
   const { data: booking, error: fetchError } = await supabaseAdmin
     .from("bookings")
     .select("*")

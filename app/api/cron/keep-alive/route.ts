@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 export async function GET(request: Request) {
   try {
@@ -10,6 +10,7 @@ export async function GET(request: Request) {
     }
 
     const testPaymentId = `KEEP_ALIVE_${Date.now()}`;
+    const supabaseAdmin = getSupabaseAdmin();
 
     // 2. Insert a dummy record to keep the DB alive
     const { error: insertError } = await supabaseAdmin
