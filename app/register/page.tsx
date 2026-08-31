@@ -8,6 +8,8 @@ import { supabase } from "@/lib/supabase";
 type FormData = {
     paymentId: string;
     name: string;
+    organisation: string;
+    category: string;
     email: string;
     phone: string;
     foodPreference: string;
@@ -19,6 +21,8 @@ type FormData = {
 const INITIAL_FORM: FormData = {
     paymentId: "",
     name: "",
+    organisation: "",
+    category: "",
     email: "",
     phone: "",
     foodPreference: "",
@@ -114,6 +118,8 @@ export default function RegisterPage() {
         const errs: FormErrors = {};
         if (!form.paymentId.trim()) errs.paymentId = "Payment ID is required.";
         if (!form.name.trim()) errs.name = "Name is required.";
+        if (!form.organisation.trim()) errs.organisation = "Name of organisation is required.";
+        if (!form.category) errs.category = "Please select a category.";
         if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
             errs.email = "A valid email address is required.";
         if (!form.phone.trim()) errs.phone = "Phone number is required.";
@@ -169,6 +175,8 @@ export default function RegisterPage() {
                     {
                         payment_id: form.paymentId,
                         name: form.name,
+                        organisation: form.organisation,
+                        category: form.category,
                         email: form.email,
                         phone: form.phone,
                         abstract_url: publicUrl,
@@ -214,6 +222,14 @@ export default function RegisterPage() {
                         <div className={styles.successDetailItem}>
                             <span className={styles.successDetailLabel}>Payment ID</span>
                             <span className={styles.successDetailValue}>{form.paymentId}</span>
+                        </div>
+                        <div className={styles.successDetailItem}>
+                            <span className={styles.successDetailLabel}>Organisation</span>
+                            <span className={styles.successDetailValue}>{form.organisation}</span>
+                        </div>
+                        <div className={styles.successDetailItem}>
+                            <span className={styles.successDetailLabel}>Category</span>
+                            <span className={styles.successDetailValue} style={{ textTransform: "capitalize" }}>{form.category.replace('_', ' ')}</span>
                         </div>
                         <div className={styles.successDetailItem}>
                             <span className={styles.successDetailLabel}>Email</span>
@@ -452,6 +468,58 @@ export default function RegisterPage() {
                                 {errors.name && (
                                     <p className={styles.errorMsg} id="name-error" role="alert">
                                         {errors.name}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Organisation */}
+                            <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
+                                <label className={styles.label} htmlFor="organisation">
+                                    Name of Organisation <span className={styles.required}>*</span>
+                                </label>
+                                <input
+                                    id="organisation"
+                                    name="organisation"
+                                    type="text"
+                                    value={form.organisation}
+                                    onChange={handleChange}
+                                    placeholder="Enter your organisation name"
+                                    className={`${styles.input} ${errors.organisation ? styles.inputError : ""}`}
+                                    aria-describedby={errors.organisation ? "organisation-error" : undefined}
+                                    disabled={submitting}
+                                />
+                                {errors.organisation && (
+                                    <p className={styles.errorMsg} id="organisation-error" role="alert">
+                                        {errors.organisation}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Category Dropdown */}
+                            <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
+                                <label className={styles.label} htmlFor="category">
+                                    Category <span className={styles.required}>*</span>
+                                </label>
+                                <div className={styles.selectWrapper}>
+                                    <select
+                                        id="category"
+                                        name="category"
+                                        value={form.category}
+                                        onChange={handleChange}
+                                        className={`${styles.select} ${errors.category ? styles.inputError : ""}`}
+                                        disabled={submitting}
+                                    >
+                                        <option value="">-- Select a Category --</option>
+                                        <option value="student">Student</option>
+                                        <option value="research_scholar">Research Scholar</option>
+                                        <option value="faculty">Faculty</option>
+                                        <option value="industry">Industry</option>
+                                    </select>
+                                    <ChevronDownIcon />
+                                </div>
+                                {errors.category && (
+                                    <p className={styles.errorMsg} id="category-error" role="alert">
+                                        {errors.category}
                                     </p>
                                 )}
                             </div>

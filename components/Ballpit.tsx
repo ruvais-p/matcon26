@@ -57,6 +57,8 @@ class X {
   #animationState = { elapsed: 0, delta: 0 };
   #isAnimating: boolean = false;
   #isVisible: boolean = false;
+  #boundOnResize = this.#onResize.bind(this);
+  #boundOnVisibilityChange = this.#onVisibilityChange.bind(this);
 
   canvas!: HTMLCanvasElement;
   camera!: PerspectiveCamera;
@@ -205,28 +207,6 @@ class X {
         _origGetProgramInfoLog(...args) ?? '';
     }
 
-    // Intercept getExtension to suppress noisy "not supported" warnings from Three.js.
-    //
-    // Three.js prints console.warn() itself when it gets null back for certain
-    // extensions it *tries* to use (like EXT_color_buffer_float for HDR PMREM
-    // and WEBGL_lose_context for clean disposal). We preemptively short-circuit
-    // known-problematic extensions so Three.js never reaches its own warning path.
-    //
-    // Extensions suppressed:
-    //   EXT_color_buffer_float  — needed by PMREMGenerator for float render targets;
-    //                             Three.js falls back to HalfFloat/UnsignedByte automatically.
-    //   WEBGL_lose_context      — used by renderer.forceContextLoss(); we guard that
-    //                             call site separately below.
-    const SUPPRESSED_EXTENSIONS = new Set([
-      'EXT_color_buffer_float',
-      'WEBGL_lose_context',
-    ]);
-    const _origGetExtension = gl.getExtension.bind(gl);
-    (gl as any).getExtension = (name: string) => {
-      if (SUPPRESSED_EXTENSIONS.has(name)) return null; // silent null — no Three.js warning
-      return _origGetExtension(name);
-    };
-
     const rendererOptions: WebGLRendererParameters = {
       canvas: this.canvas,
       context: gl,
@@ -245,9 +225,9 @@ class X {
 
   #initObservers() {
     if (!(this.#config.size instanceof Object)) {
-      window.addEventListener('resize', this.#onResize.bind(this));
+      window.addEventListener('resize', this.#boundOnResize);
       if (this.#config.size === 'parent' && this.canvas.parentNode) {
-        this.#resizeObserver = new ResizeObserver(this.#onResize.bind(this));
+        this.#resizeObserver = new ResizeObserver(this.#boundOnResize);
         this.#resizeObserver.observe(this.canvas.parentNode as Element);
       }
     }
@@ -257,7 +237,7 @@ class X {
       threshold: 0
     });
     this.#intersectionObserver.observe(this.canvas);
-    document.addEventListener('visibilitychange', this.#onVisibilityChange.bind(this));
+    document.addEventListener('visibilitychange', this.#boundOnVisibilityChange);
   }
 
   #onResize() {
@@ -402,17 +382,15 @@ class X {
     this.clear();
     this.#postprocessing?.dispose();
     this.renderer?.dispose();
-    // forceContextLoss requires the WEBGL_lose_context extension. jfjwefh0wgfowr[gwr[g]]
-    // We suppress that extension for low-end compatibility, so guard the call.
-    try { this.renderer?.forceContextLoss(); } catch { /* extension unavailable — skip */ }
     this.isDisposed = true;
   }
 
   #onResizeCleanup() {
-    window.removeEventListener('resize', this.#onResize.bind(this));
+    window.removeEventListener('resize', this.#boundOnResize);
+    if (this.#resizeTimer) clearTimeout(this.#resizeTimer);
     this.#resizeObserver?.disconnect();
     this.#intersectionObserver?.disconnect();
-    document.removeEventListener('visibilitychange', this.#onVisibilityChange.bind(this));
+    document.removeEventListener('visibilitychange', this.#boundOnVisibilityChange);
   }
 }
 
@@ -814,13 +792,19 @@ class Z extends InstancedMesh {
     let envTexture;
 
     try {
+      const supportsFloatRenderTargets = Boolean(
+        renderer.getContext().getExtension('EXT_color_buffer_float')
+      );
+      if (!supportsFloatRenderTargets) {
+        throw new Error('EXT_color_buffer_float is unavailable');
+      }
       const roomEnv = new RoomEnvironment();
       const pmrem = new PMREMGenerator(renderer);
       envTexture = pmrem.fromScene(roomEnv).texture;
       pmrem.dispose();
       (roomEnv as RoomEnvironment & { dispose?: () => void }).dispose?.();
-    } catch (error) {
-      console.warn('Ballpit: Failed to build environment map. Rendering without PMREM.', error);
+    } catch {
+      // PMREM is optional; basic lighting still renders correctly on lower-end GPUs.
     }
 
     const geometry = new SphereGeometry();

@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { supabaseAdmin } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export async function loginAdmin(email: string, pass: string) {
   const adminEmail = process.env.ADMIN_EMAIL;
@@ -113,6 +113,8 @@ export async function confirmAndSendTicket(id: string) {
     const qrData = JSON.stringify({
       bookingId: booking.id,
       name: booking.name,
+      organisation: booking.organisation || "",
+      category: booking.category || "",
       paymentId: booking.payment_id,
       email: booking.email,
       type: booking.type || "",
@@ -166,6 +168,8 @@ export async function confirmAndSendTicket(id: string) {
               <h3 style="color: #ffffff; margin-top: 0; margin-bottom: 15px; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Attendee Information</h3>
               <table style="width: 100%; border-collapse: collapse; font-size: 15px; table-layout: fixed;">
                 <tr><td style="padding: 10px 0; color: #a1a1aa; width: 40%;">Payment Ref</td><td style="padding: 10px 0; text-align: right; color: #ffffff; font-family: monospace; word-break: break-all;">${booking.payment_id}</td></tr>
+                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Organisation</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05); word-break: break-word;">${booking.organisation || "N/A"}</td></tr>
+                <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Category</td><td style="padding: 10px 0; text-align: right; color: #ffffff; text-transform: capitalize; border-top: 1px solid rgba(255,255,255,0.05); word-break: break-word;">${(booking.category || "N/A").replace('_', ' ')}</td></tr>
                 <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Type</td><td style="padding: 10px 0; text-align: right; color: #ffffff; text-transform: capitalize; border-top: 1px solid rgba(255,255,255,0.05); word-break: break-word;">${booking.type || "N/A"}</td></tr>
                 <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Theme</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05); word-break: break-word;">${booking.theme || "N/A"}</td></tr>
                 <tr><td style="padding: 10px 0; color: #a1a1aa; border-top: 1px solid rgba(255,255,255,0.05);">Food</td><td style="padding: 10px 0; text-align: right; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.05); word-break: break-word;">${booking.food_preference === "veg" ? "Vegetarian" : "Non-Vegetarian"}</td></tr>

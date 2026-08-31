@@ -28,6 +28,10 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "MATCON 2026 — Materials for a Sustainable Future",
   description: "International Conference on Materials for a Sustainable Future",
+  icons: {
+    icon: "/logo/cusat_logo.png",
+    apple: "/logo/cusat_logo.png",
+  },
 };
 
 export default function RootLayout({
