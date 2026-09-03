@@ -712,6 +712,79 @@
   color: var(--accent, #c8f04a);
 }
 
+.controlsActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.exportBtnGroup {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(200, 240, 74, 0.05);
+  border: 1px solid rgba(200, 240, 74, 0.25);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.exportBtnGroup:hover {
+  border-color: var(--accent, #c8f04a);
+  box-shadow: 0 0 16px rgba(200, 240, 74, 0.15);
+  background: rgba(200, 240, 74, 0.08);
+}
+
+.exportMainBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--accent, #c8f04a);
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-inter, 'Inter', sans-serif);
+  transition: background 0.15s, color 0.15s;
+}
+
+.exportMainBtn:hover {
+  background: rgba(200, 240, 74, 0.15);
+  color: #ffffff;
+}
+
+.exportSecondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  border-left: 1px solid rgba(200, 240, 74, 0.2);
+  color: #a1a1aa;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-inter, 'Inter', sans-serif);
+  transition: background 0.15s, color 0.15s;
+}
+
+.exportSecondaryBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.exportCountBadge {
+  background: rgba(200, 240, 74, 0.2);
+  color: var(--accent, #c8f04a);
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 0.725rem;
+  font-weight: 700;
+}
+
 .tabBadge {
   background: rgba(255, 255, 255, 0.08);
   color: #a1a1aa;
@@ -724,6 +797,25 @@
 .tabBtnActive .tabBadge {
   background: rgba(200, 240, 74, 0.15);
   color: var(--accent, #c8f04a);
+}
+
+.guestOrg {
+  font-size: 0.8rem;
+  color: #d4d4d8;
+  font-weight: 500;
+}
+
+.guestCategory {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent, #c8f04a);
+  background: rgba(200, 240, 74, 0.1);
+  padding: 1px 6px;
+  border-radius: 2px;
+  width: fit-content;
+  text-transform: capitalize;
+  margin-top: 2px;
 }
 
 /* ── Bookings Table Card ── */

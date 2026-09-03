@@ -5,11 +5,14 @@ import { updateBookingStatus, confirmAndSendTicket, logoutAdmin } from "./action
 import styles from "./manage.module.css";
 import Link from "next/link";
 import QRCode from "qrcode";
+import * as XLSX from "xlsx";
 
 type Booking = {
   id: string;
   payment_id: string;
   name: string;
+  organisation?: string;
+  category?: string;
   email: string;
   phone: string;
   abstract_url: string;
@@ -123,6 +126,95 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
     });
   };
 
+  const handleExportExcel = (exportAll: boolean = false) => {
+    const dataToExport = exportAll ? bookings : filteredBookings;
+    if (!dataToExport || dataToExport.length === 0) {
+      setNotification({
+        message: "No registration records available to export.",
+        type: "error",
+      });
+      return;
+    }
+
+    try {
+      const formattedRows = dataToExport.map((b, index) => ({
+        "SL No": index + 1,
+        "Submission Date": b.created_at
+          ? new Date(b.created_at).toLocaleString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "N/A",
+        "Full Name": b.name || "N/A",
+        "Email Address": b.email || "N/A",
+        "Phone Number": b.phone || "N/A",
+        "Organisation / Institution": b.organisation || "N/A",
+        "Category": b.category ? b.category.replace(/_/g, " ").toUpperCase() : "N/A",
+        "Presentation Type": b.type ? b.type.toUpperCase() : "N/A",
+        "Theme / Track": b.theme || "N/A",
+        "Food Preference":
+          b.food_preference === "veg"
+            ? "Vegetarian"
+            : b.food_preference === "non-veg"
+            ? "Non-Vegetarian"
+            : b.food_preference || "N/A",
+        "Accommodation Needed": b.accommodation_needed === "yes" ? "Yes" : "No",
+        "Payment ID": b.payment_id || "N/A",
+        "Verification Status": b.status
+          ? b.status.charAt(0).toUpperCase() + b.status.slice(1)
+          : "Pending",
+        "Abstract URL": b.abstract_url || "N/A",
+      }));
+
+      // Create worksheet
+      const worksheet = XLSX.utils.json_to_sheet(formattedRows);
+
+      // Auto-fit column widths for clear spreadsheet viewing
+      worksheet["!cols"] = [
+        { wch: 8 },  // SL No
+        { wch: 22 }, // Submission Date
+        { wch: 26 }, // Full Name
+        { wch: 30 }, // Email Address
+        { wch: 18 }, // Phone Number
+        { wch: 32 }, // Organisation
+        { wch: 20 }, // Category
+        { wch: 18 }, // Presentation Type
+        { wch: 30 }, // Theme
+        { wch: 18 }, // Food
+        { wch: 22 }, // Accommodation
+        { wch: 24 }, // Payment ID
+        { wch: 18 }, // Verification Status
+        { wch: 50 }, // Abstract URL
+      ];
+
+      // Create workbook and append sheet
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Registrations");
+
+      // Timestamped filename
+      const dateStr = new Date().toISOString().slice(0, 10);
+      const filterTag = exportAll ? "All" : activeTab === "all" ? "Filtered" : activeTab.toUpperCase();
+      const fileName = `MATCON2026_Registrations_${filterTag}_${dateStr}.xlsx`;
+
+      // Export file
+      XLSX.writeFile(workbook, fileName);
+
+      setNotification({
+        message: `Exported ${dataToExport.length} registration(s) to ${fileName} successfully!`,
+        type: "success",
+      });
+    } catch (err: any) {
+      console.error("Failed to export registrations to Excel:", err);
+      setNotification({
+        message: "Failed to export Excel file: " + (err.message || "Unknown error"),
+        type: "error",
+      });
+    }
+  };
+
   // Metrics
   const totalCount = bookings.length;
   const pendingCount = bookings.filter((b) => b.status === "pending").length;
@@ -142,6 +234,8 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
       b.email.toLowerCase().includes(searchLower) ||
       b.phone.includes(searchLower) ||
       b.payment_id.toLowerCase().includes(searchLower) ||
+      (b.organisation && b.organisation.toLowerCase().includes(searchLower)) ||
+      (b.category && b.category.toLowerCase().includes(searchLower)) ||
       (b.type && b.type.toLowerCase().includes(searchLower)) ||
       (b.theme && b.theme.toLowerCase().includes(searchLower));
 
@@ -296,40 +390,66 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
             </div>
           )}
 
-          {/* Controls: Search and Tabs */}
+          {/* Controls: Search, Tabs, and Export */}
           <section className={styles.controlsRow}>
             <div className={styles.searchBox}>
               <SearchIcon />
               <input
                 type="text"
-                placeholder="Search by Name, Email, Phone, or Payment ID..."
+                placeholder="Search by Name, Email, Phone, Org, or Payment ID..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className={styles.searchInput}
               />
               {search && (
-                <button className={styles.clearSearchBtn} onClick={() => setSearch("")}>
+                <button className={styles.clearSearchBtn} onClick={() => setSearch("")} title="Clear search">
                   ✖
                 </button>
               )}
             </div>
 
-            <div className={styles.tabsList} role="tablist">
-              {(["all", "pending", "accept", "reject"] as const).map((tab) => {
-                const label = tab === "all" ? "All" : tab === "accept" ? "Accepted" : tab === "reject" ? "Rejected" : "Pending";
-                const count = tab === "all" ? totalCount : tab === "pending" ? pendingCount : tab === "accept" ? acceptedCount : rejectedCount;
-                return (
+            <div className={styles.controlsActions}>
+              <div className={styles.tabsList} role="tablist">
+                {(["all", "pending", "accept", "reject"] as const).map((tab) => {
+                  const label = tab === "all" ? "All" : tab === "accept" ? "Accepted" : tab === "reject" ? "Rejected" : "Pending";
+                  const count = tab === "all" ? totalCount : tab === "pending" ? pendingCount : tab === "accept" ? acceptedCount : rejectedCount;
+                  return (
+                    <button
+                      key={tab}
+                      role="tab"
+                      aria-selected={activeTab === tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`${styles.tabBtn} ${activeTab === tab ? styles.tabBtnActive : ""}`}
+                    >
+                      {label} <span className={styles.tabBadge}>{count}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Excel Export Button */}
+              <div className={styles.exportBtnGroup}>
+                <button
+                  type="button"
+                  className={styles.exportMainBtn}
+                  onClick={() => handleExportExcel(false)}
+                  title={`Export ${filteredBookings.length} ${activeTab === "all" ? "" : activeTab} registration(s) to Excel (.xlsx)`}
+                >
+                  <ExcelIcon />
+                  <span>Export Excel</span>
+                  <span className={styles.exportCountBadge}>{filteredBookings.length}</span>
+                </button>
+                {filteredBookings.length !== bookings.length && (
                   <button
-                    key={tab}
-                    role="tab"
-                    aria-selected={activeTab === tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`${styles.tabBtn} ${activeTab === tab ? styles.tabBtnActive : ""}`}
+                    type="button"
+                    className={styles.exportSecondaryBtn}
+                    onClick={() => handleExportExcel(true)}
+                    title={`Export all ${bookings.length} registration(s) without filtering`}
                   >
-                    {label} <span className={styles.tabBadge}>{count}</span>
+                    <span>All ({bookings.length})</span>
                   </button>
-                );
-              })}
+                )}
+              </div>
             </div>
           </section>
 
@@ -368,6 +488,8 @@ export default function AdminDashboard({ initialBookings, fetchError }: Dashboar
                         <td className={styles.tdGuest}>
                           <div className={styles.guestInfo}>
                             <span className={styles.guestName}>{b.name}</span>
+                            {b.organisation && <span className={styles.guestOrg}>{b.organisation}</span>}
+                            {b.category && <span className={styles.guestCategory}>{(b.category).replace(/_/g, ' ')}</span>}
                             <span className={styles.guestContact}>{b.email}</span>
                             <span className={styles.guestContact}>{b.phone}</span>
                           </div>
@@ -663,5 +785,15 @@ const SpinnerIcon = () => (
     <line x1="18" y1="12" x2="22" y2="12" />
     <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" />
     <line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
+  </svg>
+);
+
+const ExcelIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="8" y1="13" x2="16" y2="13" />
+    <line x1="8" y1="17" x2="16" y2="17" />
+    <line x1="10" y1="9" x2="8" y2="9" />
   </svg>
 );
