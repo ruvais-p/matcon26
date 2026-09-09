@@ -12,28 +12,32 @@ const NAV_LINKS = [
 ];
 
 export default function Header() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const pathname = usePathname();
-
-  if (pathname.startsWith("/manage")) {
-    return null;
-  }
 
   // Only show the transparent-at-top behaviour on the homepage
   const isHome = pathname === "/";
+  const isManage = pathname?.startsWith("/manage");
 
   useEffect(() => {
+    if (isManage) return;
     const threshold = isHome ? window.innerHeight * 0.1 : 1;
 
     const onScroll = () => setScrolled(window.scrollY > threshold);
     onScroll(); // set initial state
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [isHome]);
+  }, [isHome, isManage]);
 
   // Close menu on route change
-  useEffect(() => { setMenuOpen(false); }, [pathname]);
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  if (isManage) {
+    return null;
+  }
 
   const glassy = scrolled || !isHome;
 

@@ -1,7 +1,22 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
+import fs from "fs/promises";
+import path from "path";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
+
+export interface SpeakerItem {
+  name: string;
+  designation: string;
+  department?: string;
+  institution?: string;
+  organization?: string;
+  country?: string;
+  image?: string;
+}
+
+const SPEAKERS_FILE_PATH = path.join(process.cwd(), "data", "speakers.json");
 
 export async function loginAdmin(email: string, pass: string) {
   const adminEmail = process.env.ADMIN_EMAIL;
@@ -230,4 +245,196 @@ export async function confirmAndSendTicket(id: string) {
     success: true,
     message: `Ticket confirmed and registration ticket successfully dispatched to ${booking.email}.`,
   };
+}
+
+export async function fetchSpeakers() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("admin_session");
+  if (session?.value !== "authenticated") {
+    return { success: false, error: "Unauthorized access" };
+  }
+
+  try {
+    const data = await fs.readFile(SPEAKERS_FILE_PATH, "utf-8");
+    const speakers = JSON.parse(data);
+    return { success: true, data: speakers as SpeakerItem[] };
+  } catch (err: any) {
+    console.error("Error reading speakers file:", err);
+    return { success: false, error: err.message || "Failed to read speakers" };
+  }
+}
+
+export async function addSpeaker(speaker: SpeakerItem) {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("admin_session");
+  if (session?.value !== "authenticated") {
+    return { success: false, error: "Unauthorized access" };
+  }
+
+  if (!speaker.name || !speaker.designation) {
+    return { success: false, error: "Name and designation are required." };
+  }
+
+  try {
+    let speakers: SpeakerItem[] = [];
+    try {
+      const data = await fs.readFile(SPEAKERS_FILE_PATH, "utf-8");
+      speakers = JSON.parse(data);
+    } catch {
+      speakers = [];
+    }
+
+    const org = (speaker.organization || speaker.institution || "").trim();
+    const newSpeaker: SpeakerItem = {
+      name: speaker.name.trim(),
+      designation: speaker.designation.trim(),
+      department: speaker.department ? speaker.department.trim() : "",
+      institution: org,
+      country: speaker.country ? speaker.country.trim() : "India",
+      image: speaker.image ? speaker.image.trim() : ""
+    };
+
+    speakers.push(newSpeaker);
+    await fs.writeFile(SPEAKERS_FILE_PATH, JSON.stringify(speakers, null, 4), "utf-8");
+
+    revalidatePath("/");
+    revalidatePath("/manage");
+
+    return { success: true, data: speakers };
+  } catch (err: any) {
+    console.error("Error adding speaker:", err);
+    return { success: false, error: err.message || "Failed to add speaker" };
+  }
+}
+
+export async function updateSpeaker(index: number, speaker: SpeakerItem) {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("admin_session");
+  if (session?.value !== "authenticated") {
+    return { success: false, error: "Unauthorized access" };
+  }
+
+  if (!speaker.name || !speaker.designation) {
+    return { success: false, error: "Name and designation are required." };
+  }
+
+  try {
+    const data = await fs.readFile(SPEAKERS_FILE_PATH, "utf-8");
+    const speakers: SpeakerItem[] = JSON.parse(data);
+
+    if (index < 0 || index >= speakers.length) {
+      return { success: false, error: "Invalid speaker index." };
+    }
+
+    const org = (speaker.organization || speaker.institution || "").trim();
+    speakers[index] = {
+      name: speaker.name.trim(),
+      designation: speaker.designation.trim(),
+      department: speaker.department ? speaker.department.trim() : "",
+      institution: org,
+      country: speaker.country ? speaker.country.trim() : (speakers[index].country || "India"),
+      image: speaker.image !== undefined ? speaker.image.trim() : (speakers[index].image || "")
+    };
+
+    await fs.writeFile(SPEAKERS_FILE_PATH, JSON.stringify(speakers, null, 4), "utf-8");
+
+    revalidatePath("/");
+    revalidatePath("/manage");
+
+    return { success: true, data: speakers };
+  } catch (err: any) {
+    console.error("Error updating speaker:", err);
+    return { success: false, error: err.message || "Failed to update speaker" };
+  }
+}
+
+export async function deleteSpeaker(index: number) {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("admin_session");
+  if (session?.value !== "authenticated") {
+    return { success: false, error: "Unauthorized access" };
+  }
+
+  try {
+    const data = await fs.readFile(SPEAKERS_FILE_PATH, "utf-8");
+    const speakers: SpeakerItem[] = JSON.parse(data);
+
+    if (index < 0 || index >= speakers.length) {
+      return { success: false, error: "Invalid speaker index." };
+    }
+
+    const deleted = speakers.splice(index, 1);
+    await fs.writeFile(SPEAKERS_FILE_PATH, JSON.stringify(speakers, null, 4), "utf-8");
+
+    revalidatePath("/");
+    revalidatePath("/manage");
+
+    return { success: true, data: speakers, deleted: deleted[0] };
+  } catch (err: any) {
+    console.error("Error deleting speaker:", err);
+    return { success: false, error: err.message || "Failed to delete speaker" };
+  }
+}
+
+export async function reorderSpeakers(speakers: SpeakerItem[]) {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("admin_session");
+  if (session?.value !== "authenticated") {
+    return { success: false, error: "Unauthorized access" };
+  }
+
+  try {
+    await fs.writeFile(SPEAKERS_FILE_PATH, JSON.stringify(speakers, null, 4), "utf-8");
+
+    revalidatePath("/");
+    revalidatePath("/manage");
+
+    return { success: true, data: speakers };
+  } catch (err: any) {
+    console.error("Error reordering speakers:", err);
+    return { success: false, error: err.message || "Failed to reorder speakers" };
+  }
+}
+
+export async function uploadSpeakerImage(speakerName: string, base64WebpData: string) {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("admin_session");
+  if (session?.value !== "authenticated") {
+    return { success: false, error: "Unauthorized access" };
+  }
+
+  if (!speakerName || !speakerName.trim()) {
+    return { success: false, error: "Speaker name is required to name the image file." };
+  }
+
+  if (!base64WebpData) {
+    return { success: false, error: "No image data provided." };
+  }
+
+  try {
+    // Sanitize speaker name for safe file naming on Windows and Linux
+    const sanitizedBase = speakerName
+      .replace(/[\/\\:*?"<>|]/g, "")
+      .trim();
+
+    const fileName = `${sanitizedBase || "speaker"}.webp`;
+    const publicSpeakersDir = path.join(process.cwd(), "public", "speakers");
+
+    await fs.mkdir(publicSpeakersDir, { recursive: true });
+    const targetPath = path.join(publicSpeakersDir, fileName);
+
+    // Extract base64 raw binary
+    const base64Content = base64WebpData.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Content, "base64");
+
+    await fs.writeFile(targetPath, buffer);
+
+    revalidatePath("/");
+    revalidatePath("/manage");
+
+    return { success: true, fileName };
+  } catch (err: any) {
+    console.error("Error saving speaker image:", err);
+    return { success: false, error: err.message || "Failed to save speaker image file." };
+  }
 }

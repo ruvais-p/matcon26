@@ -1,21 +1,40 @@
 import React from "react";
 import Image from "next/image";
 import styles from "./Speakers.module.css";
-import speakersData from "@/data/speakers.json";
+import fs from "fs";
+import path from "path";
+import defaultSpeakersData from "@/data/speakers.json";
 
 interface Speaker {
   name: string;
   designation: string;
   department?: string;
-  institution: string;
-  country: string;
+  institution?: string;
+  organization?: string;
+  country?: string;
   image?: string;
 }
 
+function getSpeakers(): Speaker[] {
+  try {
+    const filePath = path.join(process.cwd(), "data", "speakers.json");
+    if (fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, "utf-8");
+      return JSON.parse(raw);
+    }
+  } catch (err) {
+    console.error("Error reading speakers.json dynamically:", err);
+  }
+  return defaultSpeakersData;
+}
+
 const SpeakerCard: React.FC<{ speaker: Speaker }> = ({ speaker }) => {
+  const org = speaker.organization || speaker.institution || "";
   const imagePath = speaker.image
-    ? `/speakers/${speaker.image}`
-    : "/speakers/default.webp";
+    ? (speaker.image.startsWith("http") || speaker.image.startsWith("/")
+        ? speaker.image
+        : `/speakers/${speaker.image}`)
+    : "/speakers/default.svg";
 
   return (
     <div className={styles.card_wrapper}>
@@ -27,6 +46,7 @@ const SpeakerCard: React.FC<{ speaker: Speaker }> = ({ speaker }) => {
             width={300}
             height={300}
             className={styles.image}
+            unoptimized={true}
           />
         </div>
       </div>
@@ -39,16 +59,25 @@ const SpeakerCard: React.FC<{ speaker: Speaker }> = ({ speaker }) => {
           <p className={styles.department}>{speaker.department}</p>
         )}
 
-        <p className={styles.institution}>
-          {speaker.institution},{" "}
-          <span className={styles.country}>{speaker.country}</span>
-        </p>
+        {org && (
+          <p className={styles.institution}>
+            {org}
+            {speaker.country && (
+              <>
+                {", "}
+                <span className={styles.country}>{speaker.country}</span>
+              </>
+            )}
+          </p>
+        )}
       </div>
     </div>
   );
 };
 
 export default function Speakers() {
+  const speakersData = getSpeakers();
+
   return (
     <section className={styles.speakers}>
       <div className={styles.container}>
@@ -66,4 +95,4 @@ export default function Speakers() {
       </div>
     </section>
   );
-}
+}

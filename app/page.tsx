@@ -6,6 +6,8 @@ import Footer from "@/components/Footer/Footer";
 import MatrixRain from "@/components/MatrixRain";
 
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <>
