@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styles from "./About.module.css";
+import SponsorBanner from "../SponsorBanner/SponsorBanner";
 
 const THEMES = [
   { name: "Green and Sustainable Chemistry", symbol: "Gs" },
@@ -61,6 +62,8 @@ export default function About() {
                 The 3-day international conference will be devoted to invited lectures by eminent academicians and scientists, oral presentations and poster presentations by researchers and budding scientists from various parts of the globe.
               </p>
             </div>
+
+            <SponsorBanner variant="standalone" />
 
             <div className={styles.decorative_marker}>
               <span>SERIES_INDEX: VIII.26</span>

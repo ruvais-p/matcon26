@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import styles from "./about.module.css";
+import SponsorBanner from "@/components/SponsorBanner/SponsorBanner";
 
 export const metadata: Metadata = {
   title: "About — MATCON 2026",
@@ -147,6 +148,8 @@ export default function AboutPage() {
                   <span className={styles.highlightText}>Invited Lectures · Oral · Poster</span>
                 </div>
               </div>
+
+              <SponsorBanner variant="standalone" />
             </div>
           </div>
         </section>
