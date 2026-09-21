@@ -180,8 +180,10 @@ export default function AdminDashboard({
       }
 
       if (editingSpeakerIndex !== null) {
+        const targetSpeaker = speakers[editingSpeakerIndex];
         // Edit existing speaker
-        const res = await updateSpeaker(editingSpeakerIndex, {
+        const res = await updateSpeaker(targetSpeaker?.id || editingSpeakerIndex, {
+          id: targetSpeaker?.id,
           name: speakerForm.name,
           designation: speakerForm.designation,
           department: speakerForm.department,
@@ -239,7 +241,7 @@ export default function AdminDashboard({
     setIsSpeakerSubmitting(true);
 
     try {
-      const res = await deleteSpeaker(deletingSpeakerIndex);
+      const res = await deleteSpeaker(target?.id || deletingSpeakerIndex);
       if (res.success && res.data) {
         setSpeakers(res.data);
         setDeletingSpeakerIndex(null);

@@ -146,3 +146,30 @@
     CREATE POLICY "Allow public select abstracts" ON storage.objects FOR SELECT USING (bucket_id = 'abstracts');
     CREATE POLICY "Allow public update abstracts" ON storage.objects FOR UPDATE USING (bucket_id = 'abstracts');
     CREATE POLICY "Allow public delete abstracts" ON storage.objects FOR DELETE USING (bucket_id = 'abstracts');
+
+    -- 11. Create speakers table
+    CREATE TABLE IF NOT EXISTS speakers (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name TEXT NOT NULL,
+        designation TEXT NOT NULL,
+        department TEXT DEFAULT '',
+        institution TEXT DEFAULT '',
+        country TEXT DEFAULT 'India',
+        image TEXT DEFAULT '',
+        order_index INTEGER DEFAULT 0,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
+    ALTER TABLE speakers DISABLE ROW LEVEL SECURITY;
+    CREATE INDEX IF NOT EXISTS idx_speakers_order ON speakers(order_index ASC, created_at ASC);
+
+    -- 12. Storage Policies (for 'speakers' bucket)
+    INSERT INTO storage.buckets (id, name, public)
+    VALUES ('speakers', 'speakers', true)
+    ON CONFLICT (id) DO UPDATE SET public = true;
+
+    CREATE POLICY "Allow public insert speakers" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'speakers');
+    CREATE POLICY "Allow public select speakers" ON storage.objects FOR SELECT USING (bucket_id = 'speakers');
+    CREATE POLICY "Allow public update speakers" ON storage.objects FOR UPDATE USING (bucket_id = 'speakers');
+    CREATE POLICY "Allow public delete speakers" ON storage.objects FOR DELETE USING (bucket_id = 'speakers');
+

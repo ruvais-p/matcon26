@@ -2,11 +2,11 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import fs from "fs/promises";
-import path from "path";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import defaultSpeakersData from "@/data/speakers.json";
 
 export interface SpeakerItem {
+  id?: string;
   name: string;
   designation: string;
   department?: string;
@@ -14,9 +14,10 @@ export interface SpeakerItem {
   organization?: string;
   country?: string;
   image?: string;
+  order_index?: number;
+  created_at?: string;
 }
 
-const SPEAKERS_FILE_PATH = path.join(process.cwd(), "data", "speakers.json");
 
 export async function loginAdmin(email: string, pass: string) {
   const adminEmail = process.env.ADMIN_EMAIL;
@@ -255,12 +256,49 @@ export async function fetchSpeakers() {
   }
 
   try {
-    const data = await fs.readFile(SPEAKERS_FILE_PATH, "utf-8");
-    const speakers = JSON.parse(data);
-    return { success: true, data: speakers as SpeakerItem[] };
+    const supabase = getSupabaseAdmin();
+    const { data, error } = await supabase
+      .from("speakers")
+      .select("*")
+      .order("order_index", { ascending: true })
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.warn("Could not query supabase speakers table:", error.message);
+      return { success: true, data: defaultSpeakersData as SpeakerItem[] };
+    }
+
+    // Auto-seed if database table exists but has 0 records
+    if (!data || data.length === 0) {
+      try {
+        const seedRows = (defaultSpeakersData as any[]).map((s, idx) => ({
+          name: s.name || "",
+          designation: s.designation || "",
+          department: s.department || "",
+          institution: s.institution || s.organization || "",
+          country: s.country || "India",
+          image: s.image || "",
+          order_index: idx,
+        }));
+        const { data: inserted, error: insertError } = await supabase
+          .from("speakers")
+          .insert(seedRows)
+          .select("*")
+          .order("order_index", { ascending: true });
+
+        if (!insertError && inserted && inserted.length > 0) {
+          return { success: true, data: inserted as SpeakerItem[] };
+        }
+      } catch (seedErr) {
+        console.error("Auto-seed speakers failed:", seedErr);
+      }
+      return { success: true, data: defaultSpeakersData as SpeakerItem[] };
+    }
+
+    return { success: true, data: data as SpeakerItem[] };
   } catch (err: any) {
-    console.error("Error reading speakers file:", err);
-    return { success: false, error: err.message || "Failed to read speakers" };
+    console.error("Error fetching speakers:", err);
+    return { success: true, data: defaultSpeakersData as SpeakerItem[] };
   }
 }
 
@@ -276,38 +314,47 @@ export async function addSpeaker(speaker: SpeakerItem) {
   }
 
   try {
-    let speakers: SpeakerItem[] = [];
-    try {
-      const data = await fs.readFile(SPEAKERS_FILE_PATH, "utf-8");
-      speakers = JSON.parse(data);
-    } catch {
-      speakers = [];
-    }
-
+    const supabase = getSupabaseAdmin();
     const org = (speaker.organization || speaker.institution || "").trim();
-    const newSpeaker: SpeakerItem = {
-      name: speaker.name.trim(),
-      designation: speaker.designation.trim(),
-      department: speaker.department ? speaker.department.trim() : "",
-      institution: org,
-      country: speaker.country ? speaker.country.trim() : "India",
-      image: speaker.image ? speaker.image.trim() : ""
-    };
 
-    speakers.push(newSpeaker);
-    await fs.writeFile(SPEAKERS_FILE_PATH, JSON.stringify(speakers, null, 4), "utf-8");
+    // Find highest order_index
+    const { data: lastSpeaker } = await supabase
+      .from("speakers")
+      .select("order_index")
+      .order("order_index", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const nextOrder = (lastSpeaker?.order_index ?? -1) + 1;
+
+    const { error } = await supabase
+      .from("speakers")
+      .insert({
+        name: speaker.name.trim(),
+        designation: speaker.designation.trim(),
+        department: speaker.department ? speaker.department.trim() : "",
+        institution: org,
+        country: speaker.country ? speaker.country.trim() : "India",
+        image: speaker.image ? speaker.image.trim() : "",
+        order_index: nextOrder,
+      });
+
+    if (error) {
+      throw new Error(error.message);
+    }
 
     revalidatePath("/");
     revalidatePath("/manage");
 
-    return { success: true, data: speakers };
+    const allSpeakers = await fetchSpeakers();
+    return { success: true, data: allSpeakers.data };
   } catch (err: any) {
     console.error("Error adding speaker:", err);
     return { success: false, error: err.message || "Failed to add speaker" };
   }
 }
 
-export async function updateSpeaker(index: number, speaker: SpeakerItem) {
+export async function updateSpeaker(idOrIndex: string | number, speaker: SpeakerItem) {
   const cookieStore = await cookies();
   const session = cookieStore.get("admin_session");
   if (session?.value !== "authenticated") {
@@ -319,36 +366,55 @@ export async function updateSpeaker(index: number, speaker: SpeakerItem) {
   }
 
   try {
-    const data = await fs.readFile(SPEAKERS_FILE_PATH, "utf-8");
-    const speakers: SpeakerItem[] = JSON.parse(data);
+    const supabase = getSupabaseAdmin();
+    const org = (speaker.organization || speaker.institution || "").trim();
 
-    if (index < 0 || index >= speakers.length) {
-      return { success: false, error: "Invalid speaker index." };
+    let targetId = typeof idOrIndex === "string" ? idOrIndex : speaker.id;
+
+    if (!targetId && typeof idOrIndex === "number") {
+      const { data: allRows } = await supabase
+        .from("speakers")
+        .select("id")
+        .order("order_index", { ascending: true })
+        .order("created_at", { ascending: true });
+
+      if (allRows && allRows[idOrIndex]) {
+        targetId = allRows[idOrIndex].id;
+      }
     }
 
-    const org = (speaker.organization || speaker.institution || "").trim();
-    speakers[index] = {
-      name: speaker.name.trim(),
-      designation: speaker.designation.trim(),
-      department: speaker.department ? speaker.department.trim() : "",
-      institution: org,
-      country: speaker.country ? speaker.country.trim() : (speakers[index].country || "India"),
-      image: speaker.image !== undefined ? speaker.image.trim() : (speakers[index].image || "")
-    };
+    if (!targetId) {
+      return { success: false, error: "Speaker ID not found to update." };
+    }
 
-    await fs.writeFile(SPEAKERS_FILE_PATH, JSON.stringify(speakers, null, 4), "utf-8");
+    const { error } = await supabase
+      .from("speakers")
+      .update({
+        name: speaker.name.trim(),
+        designation: speaker.designation.trim(),
+        department: speaker.department ? speaker.department.trim() : "",
+        institution: org,
+        country: speaker.country ? speaker.country.trim() : "India",
+        ...(speaker.image !== undefined ? { image: speaker.image.trim() } : {}),
+      })
+      .eq("id", targetId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
 
     revalidatePath("/");
     revalidatePath("/manage");
 
-    return { success: true, data: speakers };
+    const allSpeakers = await fetchSpeakers();
+    return { success: true, data: allSpeakers.data };
   } catch (err: any) {
     console.error("Error updating speaker:", err);
     return { success: false, error: err.message || "Failed to update speaker" };
   }
 }
 
-export async function deleteSpeaker(index: number) {
+export async function deleteSpeaker(idOrIndex: string | number) {
   const cookieStore = await cookies();
   const session = cookieStore.get("admin_session");
   if (session?.value !== "authenticated") {
@@ -356,20 +422,39 @@ export async function deleteSpeaker(index: number) {
   }
 
   try {
-    const data = await fs.readFile(SPEAKERS_FILE_PATH, "utf-8");
-    const speakers: SpeakerItem[] = JSON.parse(data);
+    const supabase = getSupabaseAdmin();
+    let targetId = typeof idOrIndex === "string" ? idOrIndex : undefined;
 
-    if (index < 0 || index >= speakers.length) {
-      return { success: false, error: "Invalid speaker index." };
+    if (!targetId && typeof idOrIndex === "number") {
+      const { data: allRows } = await supabase
+        .from("speakers")
+        .select("id")
+        .order("order_index", { ascending: true })
+        .order("created_at", { ascending: true });
+
+      if (allRows && allRows[idOrIndex]) {
+        targetId = allRows[idOrIndex].id;
+      }
     }
 
-    const deleted = speakers.splice(index, 1);
-    await fs.writeFile(SPEAKERS_FILE_PATH, JSON.stringify(speakers, null, 4), "utf-8");
+    if (!targetId) {
+      return { success: false, error: "Speaker not found to delete." };
+    }
+
+    const { error } = await supabase
+      .from("speakers")
+      .delete()
+      .eq("id", targetId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
 
     revalidatePath("/");
     revalidatePath("/manage");
 
-    return { success: true, data: speakers, deleted: deleted[0] };
+    const allSpeakers = await fetchSpeakers();
+    return { success: true, data: allSpeakers.data };
   } catch (err: any) {
     console.error("Error deleting speaker:", err);
     return { success: false, error: err.message || "Failed to delete speaker" };
@@ -384,12 +469,24 @@ export async function reorderSpeakers(speakers: SpeakerItem[]) {
   }
 
   try {
-    await fs.writeFile(SPEAKERS_FILE_PATH, JSON.stringify(speakers, null, 4), "utf-8");
+    const supabase = getSupabaseAdmin();
+    const updates = speakers
+      .map((s, index) => {
+        if (!s.id) return null;
+        return supabase
+          .from("speakers")
+          .update({ order_index: index })
+          .eq("id", s.id);
+      })
+      .filter(Boolean);
+
+    await Promise.all(updates);
 
     revalidatePath("/");
     revalidatePath("/manage");
 
-    return { success: true, data: speakers };
+    const allSpeakers = await fetchSpeakers();
+    return { success: true, data: allSpeakers.data };
   } catch (err: any) {
     console.error("Error reordering speakers:", err);
     return { success: false, error: err.message || "Failed to reorder speakers" };
@@ -412,29 +509,40 @@ export async function uploadSpeakerImage(speakerName: string, base64WebpData: st
   }
 
   try {
-    // Sanitize speaker name for safe file naming on Windows and Linux
+    const supabase = getSupabaseAdmin();
     const sanitizedBase = speakerName
       .replace(/[\/\\:*?"<>|]/g, "")
-      .trim();
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "_");
 
-    const fileName = `${sanitizedBase || "speaker"}.webp`;
-    const publicSpeakersDir = path.join(process.cwd(), "public", "speakers");
-
-    await fs.mkdir(publicSpeakersDir, { recursive: true });
-    const targetPath = path.join(publicSpeakersDir, fileName);
-
-    // Extract base64 raw binary
+    const fileName = `${sanitizedBase || "speaker"}_${Date.now()}.webp`;
     const base64Content = base64WebpData.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(base64Content, "base64");
 
-    await fs.writeFile(targetPath, buffer);
+    const { error: uploadError } = await supabase.storage
+      .from("speakers")
+      .upload(fileName, buffer, {
+        contentType: "image/webp",
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error("Supabase storage upload error:", uploadError);
+      throw new Error(`Storage upload failed: ${uploadError.message}. Ensure 'speakers' bucket exists in Supabase.`);
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from("speakers")
+      .getPublicUrl(fileName);
 
     revalidatePath("/");
     revalidatePath("/manage");
 
-    return { success: true, fileName };
+    return { success: true, fileName: publicUrl };
   } catch (err: any) {
     console.error("Error saving speaker image:", err);
-    return { success: false, error: err.message || "Failed to save speaker image file." };
+    return { success: false, error: err.message || "Failed to upload speaker image." };
   }
 }
+

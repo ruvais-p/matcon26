@@ -1,11 +1,11 @@
 import React from "react";
 import Image from "next/image";
 import styles from "./Speakers.module.css";
-import fs from "fs";
-import path from "path";
 import defaultSpeakersData from "@/data/speakers.json";
+import { supabase } from "@/lib/supabase";
 
 interface Speaker {
+  id?: string;
   name: string;
   designation: string;
   department?: string;
@@ -15,18 +15,23 @@ interface Speaker {
   image?: string;
 }
 
-function getSpeakers(): Speaker[] {
+async function getSpeakers(): Promise<Speaker[]> {
   try {
-    const filePath = path.join(process.cwd(), "data", "speakers.json");
-    if (fs.existsSync(filePath)) {
-      const raw = fs.readFileSync(filePath, "utf-8");
-      return JSON.parse(raw);
+    const { data, error } = await supabase
+      .from("speakers")
+      .select("*")
+      .order("order_index", { ascending: true })
+      .order("created_at", { ascending: true });
+
+    if (!error && data && data.length > 0) {
+      return data as Speaker[];
     }
   } catch (err) {
-    console.error("Error reading speakers.json dynamically:", err);
+    console.error("Error reading speakers from Supabase:", err);
   }
-  return defaultSpeakersData;
+  return defaultSpeakersData as Speaker[];
 }
+
 
 const SpeakerCard: React.FC<{ speaker: Speaker }> = ({ speaker }) => {
   const org = speaker.organization || speaker.institution || "";
@@ -75,8 +80,8 @@ const SpeakerCard: React.FC<{ speaker: Speaker }> = ({ speaker }) => {
   );
 };
 
-export default function Speakers() {
-  const speakersData = getSpeakers();
+export default async function Speakers() {
+  const speakersData = await getSpeakers();
 
   return (
     <section className={styles.speakers}>
