@@ -57,6 +57,7 @@ export default function Footer() {
               <nav className={styles.quick_links}>
                 <Link href="/">Home</Link>
                 <Link href="/#about">About</Link>
+                <Link href="/#partners">Partners</Link>
                 <Link href="/gallery">Gallery</Link>
                 <Link href="/register">Register</Link>
               </nav>

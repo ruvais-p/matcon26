@@ -36,7 +36,7 @@ export default function About() {
   }, []);
 
   return (
-    <section className={styles.about} aria-label="About MATCON 2026">
+    <section className={styles.about} id="about" aria-label="About MATCON 2026">
       <div className={styles.container}>
 
         {/* SECTION 1: THE CONFERENCE */}

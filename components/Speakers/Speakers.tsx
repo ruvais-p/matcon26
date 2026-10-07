@@ -87,7 +87,7 @@ export default async function Speakers() {
     <section className={styles.speakers}>
       <div className={styles.container}>
         <header className={styles.header}>
-          <span className={styles.meta}>03/08 // ACADEMIC_ELITE</span>
+          <span className={styles.meta}>05/08 // ACADEMIC_ELITE</span>
           <h2 className={styles.title}>DISTINGUISHED SPEAKERS</h2>
           <div className={styles.underline}></div>
         </header>
