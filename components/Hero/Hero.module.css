@@ -1,15 +1,18 @@
 .hero {
   position: relative;
   width: 100%;
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-top: clamp(100px, 13vh, 135px);
+  padding-bottom: clamp(60px, 8vh, 100px);
   overflow: hidden;
   background-color: #000;
 }
+
 
 .backgroundContainer {
   position: absolute;
@@ -62,6 +65,7 @@
   max-width: 900px;
   padding: 0 20px;
   pointer-events: none;
+  margin: auto 0;
 }
 
 .tagline {
@@ -76,8 +80,8 @@
 }
 
 .title {
-  font-family: var(--font-bebas);
-  font-size: clamp(80px, 15vw, 180px);
+  font-family: var(--font-bebas-neue), var(--font-bebas), 'Bebas Neue', sans-serif;
+  font-size: clamp(75px, 14vw, 175px);
   line-height: 0.85;
   color: #fff;
   margin-bottom: 28px;
