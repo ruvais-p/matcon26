@@ -11,13 +11,13 @@ interface Partner {
 }
 
 const PARTNERS: Partner[] = [
-  {
-    name: "Ants Innovations",
-    category: "Industrial Partner",
-    tagline: "Materials | Equipment | Projects",
-    logo: "/sponsors/Ants_Final-Logo_2-02-02.png",
-    website: "https://antsceramics.com",
-  },
+  // {
+  //   name: "Ants Innovations",
+  //   category: "Industrial Partner",
+  //   tagline: "Materials | Equipment | Projects",
+  //   logo: "/sponsors/Ants_Final-Logo_2-02-02.png",
+  //   website: "https://antsceramics.com",
+  // },
   {
     name: "Carborundum Universal Limited (CUMI)",
     category: "Industrial Partner",
