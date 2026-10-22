@@ -85,6 +85,9 @@ export default function RegisterPage() {
         if (errors[name as keyof FormData]) {
             setErrors((prev) => ({ ...prev, [name]: undefined }));
         }
+        if (name === "type" && value === "participation_only") {
+            setErrors((prev) => ({ ...prev, abstract: undefined, theme: undefined }));
+        }
     };
 
     const handleFileChange = (selectedFile: File) => {
@@ -116,6 +119,8 @@ export default function RegisterPage() {
 
     const validate = (): FormErrors => {
         const errs: FormErrors = {};
+        const isParticipationOnly = form.type === "participation_only";
+
         if (!form.paymentId.trim()) errs.paymentId = "Payment ID is required.";
         if (!form.name.trim()) errs.name = "Name is required.";
         if (!form.organisation.trim()) errs.organisation = "Name of organisation is required.";
@@ -124,8 +129,10 @@ export default function RegisterPage() {
             errs.email = "A valid email address is required.";
         if (!form.phone.trim()) errs.phone = "Phone number is required.";
         if (!form.type) errs.type = "Please select a presentation type.";
-        if (!form.theme) errs.theme = "Please select a conference theme.";
-        if (!abstractFile) errs.abstract = "Abstract file is required.";
+        if (!isParticipationOnly) {
+            if (!form.theme) errs.theme = "Please select a conference theme.";
+            if (!abstractFile) errs.abstract = "Abstract file is required.";
+        }
         if (!form.foodPreference) errs.foodPreference = "Please select a food preference.";
         if (!form.accommodation) errs.accommodation = "Please indicate if accommodation is needed.";
         return errs;
@@ -146,27 +153,29 @@ export default function RegisterPage() {
         setSubmitError(null);
 
         try {
-            if (!abstractFile) {
+            let publicUrl = "";
+            if (abstractFile) {
+                // 1. Upload abstract file to Supabase storage bucket 'abstracts'
+                const fileExt = abstractFile.name.split('.').pop();
+                const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from("abstracts")
+                    .upload(fileName, abstractFile);
+
+                if (uploadError) {
+                    console.error("Storage upload error details:", uploadError);
+                    throw new Error(`Failed to upload abstract to storage: ${uploadError.message}. Make sure the 'abstracts' storage bucket exists in Supabase and has public insert policies enabled.`);
+                }
+
+                // Get public URL of uploaded file
+                const { data: { publicUrl: url } } = supabase.storage
+                    .from("abstracts")
+                    .getPublicUrl(fileName);
+                publicUrl = url;
+            } else if (form.type !== "participation_only") {
                 throw new Error("Abstract file is missing.");
             }
-
-            // 1. Upload abstract file to Supabase storage bucket 'abstracts'
-            const fileExt = abstractFile.name.split('.').pop();
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-
-            const { data: uploadData, error: uploadError } = await supabase.storage
-                .from("abstracts")
-                .upload(fileName, abstractFile);
-
-            if (uploadError) {
-                console.error("Storage upload error details:", uploadError);
-                throw new Error(`Failed to upload abstract to storage: ${uploadError.message}. Make sure the 'abstracts' storage bucket exists in Supabase and has public insert policies enabled.`);
-            }
-
-            // Get public URL of uploaded file
-            const { data: { publicUrl } } = supabase.storage
-                .from("abstracts")
-                .getPublicUrl(fileName);
 
             // 2. Insert row into 'bookings' table
             const { data: insertData, error: insertError } = await supabase
@@ -241,12 +250,14 @@ export default function RegisterPage() {
                         </div>
                         <div className={styles.successDetailItem}>
                             <span className={styles.successDetailLabel}>Presentation Type</span>
-                            <span className={styles.successDetailValue} style={{ textTransform: "capitalize" }}>{form.type}</span>
+                            <span className={styles.successDetailValue} style={{ textTransform: "capitalize" }}>{form.type.replace(/_/g, ' ')}</span>
                         </div>
-                        <div className={styles.successDetailItem}>
-                            <span className={styles.successDetailLabel}>Theme</span>
-                            <span className={styles.successDetailValue}>{form.theme}</span>
-                        </div>
+                        {form.theme && (
+                            <div className={styles.successDetailItem}>
+                                <span className={styles.successDetailLabel}>Theme</span>
+                                <span className={styles.successDetailValue}>{form.theme}</span>
+                            </div>
+                        )}
                         <div className={styles.successDetailItem}>
                             <span className={styles.successDetailLabel}>Food Preference</span>
                             <span className={styles.successDetailValue}>
@@ -570,7 +581,7 @@ export default function RegisterPage() {
                                 )}
                             </div>
 
-                            {/* Presentation Type (Oral or Poster) */}
+                            {/* Presentation Type (Oral, Poster, or Participation only) */}
                             <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
                                 <label className={styles.label}>
                                     Presentation Type <span className={styles.required}>*</span>
@@ -579,6 +590,7 @@ export default function RegisterPage() {
                                     {[
                                         { val: "oral", label: "Oral" },
                                         { val: "poster", label: "Poster" },
+                                        { val: "participation_only", label: "Participation only" },
                                     ].map(({ val, label }) => (
                                         <label key={val} className={`${styles.optionLabel} ${submitting ? styles.disabledLabel : ""}`}>
                                             <input
@@ -606,7 +618,12 @@ export default function RegisterPage() {
                             {/* Conference Theme Dropdown */}
                             <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
                                 <label className={styles.label} htmlFor="theme">
-                                    Conference Theme <span className={styles.required}>*</span>
+                                    Conference Theme{" "}
+                                    {form.type !== "participation_only" ? (
+                                        <span className={styles.required}>*</span>
+                                    ) : (
+                                        <span style={{ fontSize: "0.85em", color: "#a1a1aa", fontWeight: "normal" }}>(Optional)</span>
+                                    )}
                                 </label>
                                 <div className={styles.selectWrapper}>
                                     <select
@@ -634,63 +651,67 @@ export default function RegisterPage() {
                             </div>
 
                             {/* Abstract File */}
-                            <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
-                                <label className={styles.label}>
-                                    Abstract (Word / DOCX) <span className={styles.required}>*</span>
-                                </label>
-                                <div
-                                    className={`${styles.fileDropzone} ${errors.abstract ? styles.inputError : ""} ${submitting ? styles.disabledDropzone : ""}`}
-                                    onDragOver={(e) => !submitting && e.preventDefault()}
-                                    onDrop={(e) => {
-                                        if (submitting) return;
-                                        e.preventDefault();
-                                        const droppedFile = e.dataTransfer.files[0];
-                                        if (droppedFile) handleFileChange(droppedFile);
-                                    }}
-                                >
-                                    <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        onChange={(e) => {
-                                            const selectedFile = e.target.files?.[0];
-                                            if (selectedFile) handleFileChange(selectedFile);
+                            {form.type !== "participation_only" && (
+                                <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
+                                    <label className={styles.label}>
+                                        Abstract (Word / DOCX) <span className={styles.required}>*</span>
+                                    </label>
+                                    <div
+                                        className={`${styles.fileDropzone} ${errors.abstract ? styles.inputError : ""} ${submitting ? styles.disabledDropzone : ""}`}
+                                        onDragOver={(e) => !submitting && e.preventDefault()}
+                                        onDrop={(e) => {
+                                            if (submitting) return;
+                                            e.preventDefault();
+                                            const droppedFile = e.dataTransfer.files[0];
+                                            if (droppedFile) handleFileChange(droppedFile);
                                         }}
-                                        accept=".doc,.docx"
-                                        style={{ display: "none" }}
-                                        id="abstract"
-                                        disabled={submitting}
-                                    />
-                                    {!abstractFile ? (
-                                        <div className={styles.dropzoneContent} onClick={() => !submitting && fileInputRef.current?.click()}>
-                                            <UploadIcon />
-                                            <p className={styles.dropzoneText}>
-                                                Drag and drop your abstract file here, or <span>browse</span>
-                                            </p>
-                                            <p className={styles.dropzoneHint}>Supports DOC or DOCX (Max 10MB)</p>
-                                        </div>
-                                    ) : (
-                                        <div className={styles.fileSelectedInfo}>
-                                            <FileIcon />
-                                            <div className={styles.fileDetails}>
-                                                <span className={styles.fileName}>{abstractFile.name}</span>
-                                                <span className={styles.fileSize}>{(abstractFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                                    >
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            onChange={(e) => {
+                                                const selectedFile = e.target.files?.[0];
+                                                if (selectedFile) handleFileChange(selectedFile);
+                                            }}
+                                            accept=".doc,.docx"
+                                            style={{ display: "none" }}
+                                            id="abstract"
+                                            disabled={submitting}
+                                        />
+                                        {!abstractFile ? (
+                                            <div className={styles.dropzoneContent} onClick={() => !submitting && fileInputRef.current?.click()}>
+                                                <UploadIcon />
+                                                <p className={styles.dropzoneText}>
+                                                    Drag and drop your abstract file here, or <span>browse</span>
+                                                </p>
+                                                <p className={styles.dropzoneHint}>Supports DOC or DOCX (Max 10MB)</p>
                                             </div>
-                                            <button
-                                                type="button"
-                                                className={styles.removeFileBtn}
-                                                onClick={handleRemoveFile}
-                                                disabled={submitting}
-                                            >
-                                                <TrashIcon />
-                                            </button>
-                                        </div>
+                                        ) : (
+                                            <div className={styles.fileSelectedInfo}>
+                                                <FileIcon />
+                                                <div className={styles.fileDetails}>
+                                                    <span className={styles.fileName}>{abstractFile.name}</span>
+                                                    <span className={styles.fileSize}>{(abstractFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    className={styles.removeFileBtn}
+                                                    onClick={handleRemoveFile}
+                                                    aria-label="Remove uploaded file"
+                                                    disabled={submitting}
+                                                >
+                                                    <TrashIcon />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {errors.abstract && (
+                                        <p className={styles.errorMsg} role="alert">
+                                            {errors.abstract}
+                                        </p>
                                     )}
                                 </div>
-                                {errors.abstract && (
-                                    <p className={styles.errorMsg} role="alert">
-                                        {errors.abstract}
-                                    </p>
-                                )}                            </div>
+                            )}
 
                             {/* Food Preference */}
                             <div className={styles.fieldGroup}>

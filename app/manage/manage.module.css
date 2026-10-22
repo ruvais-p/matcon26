@@ -982,6 +982,12 @@
   border: 1px solid rgba(56, 189, 248, 0.2);
 }
 
+.badgeParticipation {
+  background: rgba(168, 85, 247, 0.1);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
 .themeText {
   font-size: 0.8rem;
   color: #a1a1aa;

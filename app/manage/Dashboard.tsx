@@ -392,7 +392,7 @@ export default function AdminDashboard({
         "Phone Number": b.phone || "N/A",
         "Organisation / Institution": b.organisation || "N/A",
         "Category": b.category ? b.category.replace(/_/g, " ").toUpperCase() : "N/A",
-        "Presentation Type": b.type ? b.type.toUpperCase() : "N/A",
+        "Presentation Type": b.type ? b.type.replace(/_/g, " ").toUpperCase() : "N/A",
         "Theme / Track": b.theme || "N/A",
         "Food Preference":
           b.food_preference === "veg"
@@ -796,8 +796,8 @@ export default function AdminDashboard({
                             </td>
                             <td className={styles.tdPresentation}>
                               <div className={styles.badgeCol}>
-                                <span className={`${styles.badge} ${b.type === "oral" ? styles.badgeOral : styles.badgePoster}`}>
-                                  {b.type ? (b.type.charAt(0).toUpperCase() + b.type.slice(1)) : "N/A"}
+                                <span className={`${styles.badge} ${b.type === "oral" ? styles.badgeOral : b.type === "poster" ? styles.badgePoster : styles.badgeParticipation}`}>
+                                  {b.type ? (b.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())) : "N/A"}
                                 </span>
                                 <span className={styles.themeText} title={b.theme}>
                                   {b.theme || "N/A"}
@@ -1414,7 +1414,7 @@ export default function AdminDashboard({
                   <div>
                     <span className={styles.tLabel}>Presentation Type</span>
                     <span className={styles.tVal} style={{ textTransform: "capitalize" }}>
-                      {selectedTicketBooking.type || "N/A"}
+                      {selectedTicketBooking.type ? selectedTicketBooking.type.replace(/_/g, " ") : "N/A"}
                     </span>
                   </div>
                   <div style={{ gridColumn: "span 2" }}>
