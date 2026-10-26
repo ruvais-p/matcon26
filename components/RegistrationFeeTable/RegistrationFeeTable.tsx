@@ -107,7 +107,7 @@ export default function RegistrationFeeTable() {
         </span>
         <span className={styles.feeDeadlineSep}>|</span>
         <span className={styles.feeDeadline}>
-          Regular Registration deadline: <strong>October 25</strong>
+          Regular Registration deadline: <strong>November 15</strong>
         </span>
       </div>
 

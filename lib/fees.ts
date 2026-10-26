@@ -20,7 +20,7 @@ export const getRegistrationFee = ({
   // Deadlines for MATCON 2026
   // Since today is April 2026, the deadlines are set for July and October 2026.
   const earlyBirdDeadline = new Date("2026-07-25T23:59:59");
-  const lateDeadline = new Date("2026-10-25T23:59:59");
+  const lateDeadline = new Date("2026-11-15T23:59:59");
 
   let phase: "early" | "late" | "spot" = "early";
   if (date > lateDeadline) {
