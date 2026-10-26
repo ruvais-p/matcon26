@@ -17,6 +17,7 @@ import Link from "next/link";
 import Image from "next/image";
 import QRCode from "qrcode";
 import * as XLSX from "xlsx";
+import { supabase } from "@/lib/supabase";
 
 type Booking = {
   id: string;
@@ -72,6 +73,7 @@ export default function AdminDashboard({
     image: "",
   });
   const [uploadedWebpData, setUploadedWebpData] = useState<string | null>(null);
+  const [uploadedWebpBlob, setUploadedWebpBlob] = useState<Blob | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string>("");
   const [isConvertingImage, setIsConvertingImage] = useState(false);
   const [isSpeakerSubmitting, setIsSpeakerSubmitting] = useState(false);
@@ -81,6 +83,11 @@ export default function AdminDashboard({
   const ITEMS_PER_PAGE = 25;
 
   const [isPending, startTransition] = useTransition();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleImageFile = (file: File) => {
     if (!file || !file.type.startsWith("image/")) {
@@ -96,20 +103,46 @@ export default function AdminDashboard({
     reader.onload = (e) => {
       const img = new (window as any).Image();
       img.onload = () => {
+        // Resize to maximum 600px dimension for avatar optimization and fast transfer
+        const MAX_DIM = 600;
+        let width = img.naturalWidth || img.width || 600;
+        let height = img.naturalHeight || img.height || 600;
+
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width > height) {
+            height = Math.round((height * MAX_DIM) / width);
+            width = MAX_DIM;
+          } else {
+            width = Math.round((width * MAX_DIM) / height);
+            height = MAX_DIM;
+          }
+        }
+
         const canvas = document.createElement("canvas");
-        canvas.width = img.naturalWidth || img.width;
-        canvas.height = img.naturalHeight || img.height;
+        canvas.width = width;
+        canvas.height = height;
         const ctx = canvas.getContext("2d");
         if (!ctx) {
           setIsConvertingImage(false);
           return;
         }
-        ctx.drawImage(img, 0, 0);
-        // Convert to WebP format with 85% high quality compression
-        const webpDataUrl = canvas.toDataURL("image/webp", 0.85);
-        setUploadedWebpData(webpDataUrl);
-        setUploadedFileName(file.name);
-        setIsConvertingImage(false);
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Generate binary Blob for direct storage upload
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              setUploadedWebpBlob(blob);
+            }
+            // Also generate data URL for instant client modal preview
+            const webpDataUrl = canvas.toDataURL("image/webp", 0.82);
+            setUploadedWebpData(webpDataUrl);
+            setUploadedFileName(file.name);
+            setIsConvertingImage(false);
+          },
+          "image/webp",
+          0.82
+        );
       };
       img.onerror = () => {
         setIsConvertingImage(false);
@@ -126,6 +159,7 @@ export default function AdminDashboard({
   const openAddSpeakerModal = () => {
     setEditingSpeakerIndex(null);
     setUploadedWebpData(null);
+    setUploadedWebpBlob(null);
     setUploadedFileName("");
     setSpeakerForm({
       name: "",
@@ -143,6 +177,7 @@ export default function AdminDashboard({
     if (!s) return;
     setEditingSpeakerIndex(index);
     setUploadedWebpData(null);
+    setUploadedWebpBlob(null);
     setUploadedFileName("");
     setSpeakerForm({
       name: s.name || "",
@@ -169,13 +204,61 @@ export default function AdminDashboard({
     try {
       let finalImage = speakerForm.image ? speakerForm.image.trim() : "";
 
-      // If user uploaded a new image, save it as WebP named after the speaker
-      if (uploadedWebpData) {
-        const uploadRes = await uploadSpeakerImage(speakerForm.name, uploadedWebpData);
-        if (uploadRes.success && uploadRes.fileName) {
-          finalImage = uploadRes.fileName;
+      // If user uploaded a new image, upload directly to Supabase storage (bypasses server action 1MB limits)
+      if (uploadedWebpBlob) {
+        const sanitizedBase = speakerForm.name
+          .replace(/[\/\\:*?"<>|]/g, "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "_");
+        const fileName = `${sanitizedBase || "speaker"}_${Date.now()}.webp`;
+
+        let uploadedUrl = "";
+
+        // 1. Direct binary streaming upload to Supabase storage (fast, zero server action overhead)
+        try {
+          const { error: uploadError } = await supabase.storage
+            .from("speakers")
+            .upload(fileName, uploadedWebpBlob, {
+              contentType: "image/webp",
+              upsert: true,
+            });
+
+          if (!uploadError) {
+            const { data: { publicUrl } } = supabase.storage
+              .from("speakers")
+              .getPublicUrl(fileName);
+            uploadedUrl = publicUrl;
+          } else {
+            console.warn("Direct storage upload error, attempting API route fallback:", uploadError.message);
+          }
+        } catch (storageErr) {
+          console.warn("Direct storage upload exception, attempting fallback:", storageErr);
+        }
+
+        // 2. Server-side API route fallback if direct client upload was blocked
+        if (!uploadedUrl) {
+          try {
+            const fd = new FormData();
+            fd.append("file", uploadedWebpBlob, fileName);
+            fd.append("speakerName", speakerForm.name);
+            const apiRes = await fetch("/api/manage/upload-speaker", {
+              method: "POST",
+              body: fd,
+            });
+            const json = await apiRes.json();
+            if (json.success && json.publicUrl) {
+              uploadedUrl = json.publicUrl;
+            }
+          } catch (apiErr) {
+            console.warn("API route upload fallback exception:", apiErr);
+          }
+        }
+
+        if (uploadedUrl) {
+          finalImage = uploadedUrl;
         } else {
-          throw new Error(uploadRes.error || "Failed to save converted WebP image.");
+          throw new Error("Failed to upload speaker image. Please check Supabase storage configuration.");
         }
       }
 
@@ -759,14 +842,16 @@ export default function AdminDashboard({
                       {paginatedBookings.length > 0 ? (
                         paginatedBookings.map((b) => (
                           <tr key={b.id} className={styles.bookingRow}>
-                            <td className={styles.tdDate}>
-                              {new Date(b.created_at).toLocaleDateString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit"
-                              })}
+                            <td className={styles.tdDate} suppressHydrationWarning>
+                              {isMounted
+                                ? new Date(b.created_at).toLocaleDateString("en-IN", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })
+                                : b.created_at ? b.created_at.slice(0, 10) : "N/A"}
                             </td>
                             <td className={styles.tdPayment}>
                               <code className={styles.paymentCode}>{b.payment_id}</code>
@@ -971,10 +1056,12 @@ export default function AdminDashboard({
                   {filteredSpeakers.map((speaker, idx) => {
                     const originalIndex = speakers.indexOf(speaker);
                     const org = speaker.organization || speaker.institution || "";
-                    const imgUrl = speaker.image
-                      ? (speaker.image.startsWith("http") || speaker.image.startsWith("/")
-                          ? speaker.image
-                          : `/speakers/${speaker.image}`)
+                    const rawImg = (speaker.image || "").trim();
+                    const hasValidImg = rawImg && rawImg !== "Dr. Saji J.webp";
+                    const imgUrl = hasValidImg
+                      ? (rawImg.startsWith("http") || rawImg.startsWith("/")
+                          ? rawImg
+                          : `/speakers/${rawImg}`)
                       : "/speakers/default.svg";
 
                     return (
@@ -986,7 +1073,10 @@ export default function AdminDashboard({
                               alt={speaker.name}
                               className={styles.speakerAvatarImg}
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = "/speakers/default.svg";
+                                const target = e.target as HTMLImageElement;
+                                if (!target.src.endsWith("/speakers/default.svg")) {
+                                  target.src = "/speakers/default.svg";
+                                }
                               }}
                             />
                           </div>
@@ -1205,6 +1295,7 @@ export default function AdminDashboard({
                           className={styles.imageClearBtn}
                           onClick={() => {
                             setUploadedWebpData(null);
+                            setUploadedWebpBlob(null);
                             setUploadedFileName("");
                           }}
                         >
@@ -1282,7 +1373,7 @@ export default function AdminDashboard({
                           src={
                             uploadedWebpData
                               ? uploadedWebpData
-                              : speakerForm.image
+                              : speakerForm.image && speakerForm.image.trim() && speakerForm.image !== "Dr. Saji J.webp"
                               ? (speakerForm.image.startsWith("http") || speakerForm.image.startsWith("/")
                                   ? speakerForm.image
                                   : `/speakers/${speakerForm.image}`)
@@ -1290,7 +1381,10 @@ export default function AdminDashboard({
                           }
                           alt="Preview"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/speakers/default.svg";
+                            const target = e.target as HTMLImageElement;
+                            if (!target.src.endsWith("/speakers/default.svg")) {
+                              target.src = "/speakers/default.svg";
+                            }
                           }}
                         />
                       </div>

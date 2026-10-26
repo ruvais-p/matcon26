@@ -520,6 +520,10 @@ export async function uploadSpeakerImage(speakerName: string, base64WebpData: st
     const base64Content = base64WebpData.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(base64Content, "base64");
 
+    if (base64WebpData.startsWith("http://") || base64WebpData.startsWith("https://")) {
+      return { success: true, fileName: base64WebpData };
+    }
+
     const { error: uploadError } = await supabase.storage
       .from("speakers")
       .upload(fileName, buffer, {
@@ -529,15 +533,15 @@ export async function uploadSpeakerImage(speakerName: string, base64WebpData: st
 
     if (uploadError) {
       console.error("Supabase storage upload error:", uploadError);
-      throw new Error(`Storage upload failed: ${uploadError.message}. Ensure 'speakers' bucket exists in Supabase.`);
+      return {
+        success: false,
+        error: `Storage upload failed: ${uploadError.message}. Ensure 'speakers' bucket is created in Supabase with public access.`,
+      };
     }
 
     const { data: { publicUrl } } = supabase.storage
       .from("speakers")
       .getPublicUrl(fileName);
-
-    revalidatePath("/");
-    revalidatePath("/manage");
 
     return { success: true, fileName: publicUrl };
   } catch (err: any) {

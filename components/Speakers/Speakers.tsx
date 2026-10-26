@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import styles from "./Speakers.module.css";
 import defaultSpeakersData from "@/data/speakers.json";
 import { supabase } from "@/lib/supabase";
@@ -33,26 +32,23 @@ async function getSpeakers(): Promise<Speaker[]> {
 }
 
 
+import SpeakerImage from "./SpeakerImage";
+
 const SpeakerCard: React.FC<{ speaker: Speaker }> = ({ speaker }) => {
   const org = speaker.organization || speaker.institution || "";
-  const imagePath = speaker.image
-    ? (speaker.image.startsWith("http") || speaker.image.startsWith("/")
-        ? speaker.image
-        : `/speakers/${speaker.image}`)
+  const rawImage = (speaker.image || "").trim();
+  const hasValidImage = rawImage && rawImage !== "Dr. Saji J.webp";
+  const imagePath = hasValidImage
+    ? (rawImage.startsWith("http") || rawImage.startsWith("/")
+        ? rawImage
+        : `/speakers/${rawImage}`)
     : "/speakers/default.svg";
 
   return (
     <div className={styles.card_wrapper}>
       <div className={styles.card_main}>
         <div className={styles.image_container}>
-          <Image
-            src={imagePath}
-            alt={speaker.name}
-            width={300}
-            height={300}
-            className={styles.image}
-            unoptimized={true}
-          />
+          <SpeakerImage src={imagePath} name={speaker.name} />
         </div>
       </div>
 
