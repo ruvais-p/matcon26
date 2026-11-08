@@ -90,10 +90,11 @@
 
 /* Grid Layout */
 .grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 32px;
+  max-width: 920px;
+  margin: 0 auto;
 }
 
 /* Card */
@@ -114,7 +115,6 @@
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   overflow: hidden;
   width: 100%;
-  max-width: 400px;
 }
 
 .card:hover {
@@ -152,6 +152,27 @@
 .card:hover .cornerTopLeft,
 .card:hover .cornerBottomRight {
   opacity: 1;
+}
+
+/* Government Partner Card Theme Variant */
+.cardGov:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.03);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.12);
+}
+
+.cardGov .cornerTopLeft,
+.cardGov .cornerBottomRight {
+  border-color: #38bdf8;
+}
+
+.cardGov:hover .bottomAccent {
+  background: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8;
+}
+
+.cardGov:hover .linkRow {
+  color: #38bdf8;
 }
 
 /* Logo Wrapper */
@@ -211,6 +232,12 @@
   padding: 4px 10px;
   border-radius: 20px;
   margin-bottom: 6px;
+}
+
+.govBadge {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.3);
 }
 
 .name {
@@ -280,6 +307,13 @@
 
   .grid {
     gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    max-width: 440px;
   }
 }
 

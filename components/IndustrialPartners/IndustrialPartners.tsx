@@ -13,21 +13,35 @@ interface Partner {
 const PARTNERS: Partner[] = [
   // {
   //   name: "Ants Innovations",
-  //   category: "Industrial Partner",
+  //   category: "Industry Partner",
   //   tagline: "Materials | Equipment | Projects",
   //   logo: "/sponsors/Ants_Final-Logo_2-02-02.png",
   //   website: "https://antsceramics.com",
   // },
   {
+    name: "Anusandhan National Research Foundation (ANRF)",
+    category: "Government Partner",
+    tagline: "Apex Body for Scientific Research • Govt. of India",
+    logo: "/sponsors/anrf.jpg",
+    website: "https://anrfonline.in",
+  },
+  {
+    name: "Indian Oil Corporation Limited (IOCL)",
+    category: "Industry Partner",
+    tagline: "The Energy of India • Innovation & Technology",
+    logo: "/sponsors/indianoil.jpg",
+    website: "https://iocl.com",
+  },
+  {
     name: "Carborundum Universal Limited (CUMI)",
-    category: "Industrial Partner",
+    category: "Industry Partner",
     tagline: "Murugappa Group • Advanced Materials",
     logo: "/sponsors/Logo-cumi.jpg",
     website: "https://www.cumi-murugappa.com",
   },
   {
     name: "Süd-Chemie",
-    category: "Industrial Partner",
+    category: "Industry Partner",
     tagline: "Creating Performance Technology",
     logo: "/sponsors/image.png",
     website: "https://www.sud-chemie-india.com",
@@ -36,21 +50,22 @@ const PARTNERS: Partner[] = [
 
 export default function IndustrialPartners() {
   return (
-    <section className={styles.section} id="partners" aria-label="Industrial Partners">
+    <section className={styles.section} id="partners" aria-label="Conference Partners">
       <div className={styles.container}>
         <header className={styles.header}>
-          <span className={styles.meta}>04/08 // INDUSTRY_COLLABORATION</span>
+          <span className={styles.meta}>04/08 // COLLABORATION_&_PARTNERS</span>
           <h2 className={styles.title}>
-            INDUSTRIAL <span className={styles.title_hi}>PARTNERS</span>
+            OUR <span className={styles.title_hi}>PARTNERS</span>
           </h2>
           <p className={styles.subtitle}>
-            Proudly supported by leading industry innovators driving advancement in materials science and sustainable technologies.
+            Proudly supported by visionary government institutions and leading industry innovators driving advancement in materials science and sustainable technologies.
           </p>
           <div className={styles.underline}></div>
         </header>
 
         <div className={styles.grid}>
           {PARTNERS.map((partner, index) => {
+            const isGov = partner.category === "Government Partner";
             const CardContent = (
               <>
                 <div className={styles.cornerTopLeft}></div>
@@ -70,7 +85,13 @@ export default function IndustrialPartners() {
                 </div>
 
                 <div className={styles.info}>
-                  <span className={styles.categoryBadge}>{partner.category}</span>
+                  <span
+                    className={`${styles.categoryBadge} ${
+                      isGov ? styles.govBadge : ""
+                    }`}
+                  >
+                    {partner.category}
+                  </span>
                   <h3 className={styles.name}>{partner.name}</h3>
                   <p className={styles.tagline}>{partner.tagline}</p>
                 </div>
@@ -98,19 +119,21 @@ export default function IndustrialPartners() {
               </>
             );
 
+            const cardClasses = `${styles.card} ${isGov ? styles.cardGov : ""}`;
+
             return partner.website ? (
               <a
                 key={index}
                 href={partner.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={styles.card}
+                className={cardClasses}
                 title={`Visit ${partner.name}`}
               >
                 {CardContent}
               </a>
             ) : (
-              <div key={index} className={styles.card}>
+              <div key={index} className={cardClasses}>
                 {CardContent}
               </div>
             );
