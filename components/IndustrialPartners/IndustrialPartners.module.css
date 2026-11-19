@@ -155,6 +155,12 @@
 }
 
 /* Government Partner Card Theme Variant */
+.cardGov {
+  grid-column: 1 / -1;
+  max-width: 480px;
+  justify-self: center;
+}
+
 .cardGov:hover {
   border-color: rgba(56, 189, 248, 0.4);
   background: rgba(56, 189, 248, 0.03);
@@ -314,6 +320,10 @@
   .grid {
     grid-template-columns: 1fr;
     max-width: 440px;
+  }
+
+  .cardGov {
+    max-width: 100%;
   }
 }
 

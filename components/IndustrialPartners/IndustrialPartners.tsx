@@ -46,6 +46,13 @@ const PARTNERS: Partner[] = [
     logo: "/sponsors/image.png",
     website: "https://www.sud-chemie-india.com",
   },
+  {
+    name: "Labvibe Solutions",
+    category: "Industry Partner",
+    tagline: "Laboratory Equipment & Scientific Instruments",
+    logo: "/sponsors/labvibe.png",
+    website: "https://labvibe.in",
+  },
 ];
 
 export default function IndustrialPartners() {
