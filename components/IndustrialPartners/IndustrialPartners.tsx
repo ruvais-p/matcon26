@@ -10,14 +10,13 @@ interface Partner {
   website?: string;
 }
 
+interface SdgGoal {
+  number: string;
+  name: string;
+  logo: string;
+}
+
 const PARTNERS: Partner[] = [
-  // {
-  //   name: "Ants Innovations",
-  //   category: "Industry Partner",
-  //   tagline: "Materials | Equipment | Projects",
-  //   logo: "/sponsors/Ants_Final-Logo_2-02-02.png",
-  //   website: "https://antsceramics.com",
-  // },
   {
     name: "Anusandhan National Research Foundation (ANRF)",
     category: "Government Partner",
@@ -52,6 +51,36 @@ const PARTNERS: Partner[] = [
     tagline: "Laboratory Equipment & Scientific Instruments",
     logo: "/sponsors/labvibe.png",
     website: "https://labvibe.in",
+  },
+  {
+    name: "Ants Innovations",
+    category: "Industry Partner",
+    tagline: "Materials | Equipment | Projects",
+    logo: "/sponsors/Ants.png",
+    website: "https://antsglobal.in",
+  },
+];
+
+const SDG_GOALS: SdgGoal[] = [
+  {
+    number: "GOAL 03",
+    name: "Good Health and Well-being",
+    logo: "/sponsors/3.svg",
+  },
+  {
+    number: "GOAL 04",
+    name: "Quality Education",
+    logo: "/sponsors/4.svg",
+  },
+  {
+    number: "GOAL 07",
+    name: "Affordable and Clean Energy",
+    logo: "/sponsors/1.png",
+  },
+  {
+    number: "GOAL 09",
+    name: "Industry, Innovation & Infrastructure",
+    logo: "/sponsors/2.svg",
   },
 ];
 
@@ -145,6 +174,42 @@ export default function IndustrialPartners() {
               </div>
             );
           })}
+        </div>
+
+        {/* UN Sustainable Development Goals Section */}
+        <div className={styles.sdgContainer}>
+          <div className={styles.sdgHeader}>
+            <span className={styles.sdgMeta}>GLOBAL_COMMITMENT // UN_SDG_ALIGNMENT</span>
+            <h3 className={styles.sdgTitle}>
+              SUSTAINABLE DEVELOPMENT <span className={styles.title_hi}>GOALS</span>
+            </h3>
+            <p className={styles.sdgSubtitle}>
+              MATCON 2026 is aligned with key United Nations Sustainable Development Goals, fostering materials science research and innovations for a sustainable future.
+            </p>
+          </div>
+
+          <div className={styles.sdgGrid}>
+            {SDG_GOALS.map((goal, idx) => (
+              <div key={idx} className={styles.sdgCard} title={`${goal.number}: ${goal.name}`}>
+                <div className={styles.sdgLogoWrapper}>
+                  <div className={styles.sdgLogoBadge}>
+                    <Image
+                      src={goal.logo}
+                      alt={`${goal.number}: ${goal.name}`}
+                      width={120}
+                      height={120}
+                      className={styles.sdgImg}
+                      unoptimized
+                    />
+                  </div>
+                </div>
+                <div className={styles.sdgInfo}>
+                  <span className={styles.sdgNumber}>{goal.number}</span>
+                  <span className={styles.sdgName}>{goal.name}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
